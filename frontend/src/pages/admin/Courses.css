@@ -1,0 +1,344 @@
+
+.page-header{
+
+    display:flex;
+
+    justify-content:space-between;
+
+    align-items:center;
+
+    gap:20px;
+
+    margin-bottom:30px;
+
+    flex-wrap:wrap;
+
+}
+
+
+
+
+
+/*=========================
+      SEARCH BOX
+=========================*/
+
+.search-box{
+
+    flex:1;
+
+    min-width:320px;
+
+    height:52px;
+
+    background:#ffffff;
+
+    border-radius:14px;
+
+    display:flex;
+
+    align-items:center;
+
+    gap:12px;
+
+    padding:0 18px;
+
+    box-shadow:0 10px 25px rgba(0,0,0,.06);
+
+}
+
+.search-box svg{
+
+    color:#6d4cff;
+
+    font-size:18px;
+
+}
+
+.search-box input{
+
+    flex:1;
+
+    border:none;
+
+    outline:none;
+
+    font-size:15px;
+
+    background:transparent;
+
+}
+
+
+
+
+
+/*=========================
+      ADD BUTTON
+=========================*/
+
+.add-btn{
+
+    height:52px;
+
+    padding:0 24px;
+
+    border:none;
+
+    border-radius:14px;
+
+    background:linear-gradient(
+
+        90deg,
+
+        #6d4cff,
+
+        #8b6cff
+
+    );
+
+    color:white;
+
+    display:flex;
+
+    align-items:center;
+
+    gap:10px;
+
+    cursor:pointer;
+
+    font-size:15px;
+
+    font-weight:600;
+
+    transition:.3s;
+
+}
+
+.add-btn:hover{
+
+    transform:translateY(-2px);
+
+    box-shadow:0 12px 25px rgba(109,76,255,.30);
+
+}
+
+
+
+
+
+/*=========================
+      TABLE
+=========================*/
+
+.courses-table{
+
+    background:white;
+
+    border-radius:20px;
+
+    overflow:hidden;
+
+    box-shadow:0 10px 30px rgba(0,0,0,.08);
+
+}
+
+.courses-table table{
+
+    width:100%;
+
+    border-collapse:collapse;
+
+}
+
+.courses-table thead{
+
+    background:#6d4cff;
+
+}
+
+.courses-table th{
+
+    color:white;
+
+    text-align:left;
+
+    padding:18px;
+
+    font-size:15px;
+
+    font-weight:600;
+
+}
+
+.courses-table td{
+
+    padding:18px;
+
+    border-bottom:1px solid #eeeeee;
+
+    color:#444;
+
+}
+
+.courses-table tr:hover{
+
+    background:#faf9ff;
+
+}
+
+
+
+
+
+/*=========================
+      COURSE CODE
+=========================*/
+
+.course-code{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:10px;
+
+    color:#6d4cff;
+
+    font-weight:600;
+
+}
+
+.course-code svg{
+
+    color:#6d4cff;
+
+}
+
+
+
+
+
+/*=========================
+      ACTION BUTTONS
+=========================*/
+
+.action-btns{
+
+    display:flex;
+
+    gap:10px;
+
+}
+
+.action-btns button{
+
+    width:38px;
+
+    height:38px;
+
+    border:none;
+
+    border-radius:10px;
+
+    display:flex;
+
+    justify-content:center;
+
+    align-items:center;
+
+    cursor:pointer;
+
+    transition:.3s;
+
+}
+
+.action-btns button:nth-child(1){
+
+    background:#eef4ff;
+
+    color:#2563eb;
+
+}
+
+.action-btns button:nth-child(2){
+
+    background:#f3f0ff;
+
+    color:#6d4cff;
+
+}
+
+.action-btns button:nth-child(3){
+
+    background:#ffe8e8;
+
+    color:#dc2626;
+
+}
+
+.action-btns button:hover{
+
+    transform:translateY(-2px);
+
+}
+
+
+
+
+
+/*=========================
+      RESPONSIVE
+=========================*/
+
+@media(max-width:900px){
+
+    .courses-table{
+
+        overflow-x:auto;
+
+    }
+
+}
+
+@media(max-width:768px){
+
+    .page-header{
+
+        flex-direction:column;
+
+        align-items:stretch;
+
+    }
+
+    .search-box{
+
+        min-width:100%;
+
+    }
+
+    .add-btn{
+
+        width:100%;
+
+        justify-content:center;
+
+    }
+
+}
+
+@media(max-width:480px){
+
+    .search-box{
+
+        height:48px;
+
+    }
+
+    .add-btn{
+
+        height:48px;
+
+    }
+
+}

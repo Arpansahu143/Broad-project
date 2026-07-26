@@ -1,0 +1,223 @@
+.profile-container{
+
+    width:100%;
+
+}
+
+.profile-card{
+
+    background:#ffffff;
+
+    border-radius:20px;
+
+    padding:35px;
+
+    box-shadow:0 10px 30px rgba(0,0,0,.08);
+
+}
+
+
+
+
+
+/*=========================
+      HEADER
+=========================*/
+
+.profile-header{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:30px;
+
+    padding-bottom:30px;
+
+    border-bottom:1px solid #ececec;
+
+    margin-bottom:35px;
+
+}
+
+.profile-header img{
+
+    width:140px;
+
+    height:140px;
+
+    border-radius:50%;
+
+    object-fit:cover;
+
+    border:5px solid #6d4cff;
+
+}
+
+.profile-header h2{
+
+    font-size:34px;
+
+    color:#222;
+
+    margin-bottom:8px;
+
+}
+
+.profile-header p{
+
+    color:#666;
+
+    font-size:17px;
+
+    margin-bottom:10px;
+
+}
+
+.profile-header span{
+
+    display:inline-block;
+
+    padding:8px 18px;
+
+    background:#f3f0ff;
+
+    color:#6d4cff;
+
+    border-radius:30px;
+
+    font-weight:600;
+
+}
+
+
+
+
+
+/*=========================
+      DETAILS
+=========================*/
+
+.profile-grid{
+
+    display:grid;
+
+    grid-template-columns:repeat(2,1fr);
+
+    gap:25px;
+
+}
+
+.profile-item{
+
+    background:#f9f9ff;
+
+    padding:22px;
+
+    border-radius:16px;
+
+    transition:.3s;
+
+}
+
+.profile-item:hover{
+
+    transform:translateY(-4px);
+
+    box-shadow:0 8px 20px rgba(109,76,255,.12);
+
+}
+
+.profile-item label{
+
+    display:block;
+
+    color:#777;
+
+    font-size:14px;
+
+    margin-bottom:8px;
+
+}
+
+.profile-item p{
+
+    color:#222;
+
+    font-size:18px;
+
+    font-weight:600;
+
+}
+
+
+
+
+
+/*=========================
+      RESPONSIVE
+=========================*/
+
+@media(max-width:900px){
+
+    .profile-grid{
+
+        grid-template-columns:1fr;
+
+    }
+
+}
+
+@media(max-width:768px){
+
+    .profile-card{
+
+        padding:25px;
+
+    }
+
+    .profile-header{
+
+        flex-direction:column;
+
+        text-align:center;
+
+    }
+
+    .profile-header img{
+
+        width:120px;
+
+        height:120px;
+
+    }
+
+    .profile-header h2{
+
+        font-size:28px;
+
+    }
+
+}
+
+@media(max-width:480px){
+
+    .profile-card{
+
+        padding:18px;
+
+    }
+
+    .profile-item{
+
+        padding:18px;
+
+    }
+
+    .profile-item p{
+
+        font-size:16px;
+
+    }
+
+}
