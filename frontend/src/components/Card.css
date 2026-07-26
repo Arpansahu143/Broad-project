@@ -1,0 +1,179 @@
+.dashboard-card{
+
+    background:white;
+
+    border-radius:20px;
+
+    padding:25px;
+
+    box-shadow:0 12px 30px rgba(0,0,0,.06);
+
+    transition:.3s;
+
+    cursor:pointer;
+
+    border:1px solid #f0f0f0;
+
+}
+
+.dashboard-card:hover{
+
+    transform:translateY(-8px);
+
+    box-shadow:0 20px 45px rgba(98,71,255,.15);
+
+}
+
+
+
+
+
+/* ==========================
+   TOP
+========================== */
+
+.card-top{
+
+    display:flex;
+
+    justify-content:space-between;
+
+    align-items:center;
+
+    margin-bottom:25px;
+
+}
+
+.card-icon{
+
+    width:65px;
+
+    height:65px;
+
+    border-radius:18px;
+
+    display:flex;
+
+    justify-content:center;
+
+    align-items:center;
+
+    color:white;
+
+    font-size:28px;
+
+}
+
+.growth{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:8px;
+
+    font-size:14px;
+
+    font-weight:600;
+
+    padding:8px 12px;
+
+    border-radius:30px;
+
+}
+
+.positive{
+
+    background:#e8fff2;
+
+    color:#16a34a;
+
+}
+
+.negative{
+
+    background:#ffecec;
+
+    color:#dc2626;
+
+}
+
+
+
+
+
+/* ==========================
+   CONTENT
+========================== */
+
+.card-content h4{
+
+    color:#777;
+
+    font-size:16px;
+
+    font-weight:500;
+
+    margin-bottom:12px;
+
+}
+
+.card-content h2{
+
+    color:#222;
+
+    font-size:36px;
+
+    font-weight:700;
+
+}
+
+
+
+
+
+/* ==========================
+   RESPONSIVE
+========================== */
+
+@media(max-width:768px){
+
+    .dashboard-card{
+
+        padding:20px;
+
+    }
+
+    .card-icon{
+
+        width:55px;
+
+        height:55px;
+
+        font-size:24px;
+
+    }
+
+    .card-content h2{
+
+        font-size:30px;
+
+    }
+
+}
+
+@media(max-width:500px){
+
+    .dashboard-card{
+
+        padding:18px;
+
+    }
+
+    .card-content h2{
+
+        font-size:26px;
+
+    }
+
+}

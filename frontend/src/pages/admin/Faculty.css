@@ -1,0 +1,353 @@
+.page-header{
+
+    display:flex;
+
+    justify-content:space-between;
+
+    align-items:center;
+
+    gap:20px;
+
+    margin-bottom:30px;
+
+    flex-wrap:wrap;
+
+}
+
+
+
+
+
+/*=========================
+      SEARCH BOX
+=========================*/
+
+.search-box{
+
+    flex:1;
+
+    min-width:300px;
+
+    height:52px;
+
+    background:white;
+
+    border-radius:14px;
+
+    display:flex;
+
+    align-items:center;
+
+    gap:12px;
+
+    padding:0 18px;
+
+    box-shadow:0 10px 25px rgba(0,0,0,.06);
+
+}
+
+.search-box svg{
+
+    color:#6d4cff;
+
+    font-size:18px;
+
+}
+
+.search-box input{
+
+    flex:1;
+
+    border:none;
+
+    outline:none;
+
+    font-size:15px;
+
+    background:transparent;
+
+}
+
+
+
+
+
+/*=========================
+      ADD BUTTON
+=========================*/
+
+.add-btn{
+
+    height:52px;
+
+    padding:0 24px;
+
+    border:none;
+
+    border-radius:14px;
+
+    background:linear-gradient(
+
+        90deg,
+
+        #6d4cff,
+
+        #8b6cff
+
+    );
+
+    color:white;
+
+    display:flex;
+
+    align-items:center;
+
+    gap:10px;
+
+    cursor:pointer;
+
+    font-size:15px;
+
+    font-weight:600;
+
+    transition:.3s;
+
+}
+
+.add-btn:hover{
+
+    transform:translateY(-2px);
+
+    box-shadow:0 12px 25px rgba(109,76,255,.30);
+
+}
+
+
+
+
+
+/*=========================
+        TABLE
+=========================*/
+
+.faculty-table{
+
+    background:white;
+
+    border-radius:20px;
+
+    overflow:hidden;
+
+    box-shadow:0 10px 30px rgba(0,0,0,.08);
+
+}
+
+.faculty-table table{
+
+    width:100%;
+
+    border-collapse:collapse;
+
+}
+
+.faculty-table thead{
+
+    background:#6d4cff;
+
+}
+
+.faculty-table th{
+
+    color:white;
+
+    text-align:left;
+
+    padding:18px;
+
+    font-size:15px;
+
+    font-weight:600;
+
+}
+
+.faculty-table td{
+
+    padding:18px;
+
+    color:#444;
+
+    border-bottom:1px solid #eeeeee;
+
+}
+
+.faculty-table tr:hover{
+
+    background:#faf9ff;
+
+}
+
+
+
+
+
+/*=========================
+        STATUS
+=========================*/
+
+.status{
+
+    display:inline-block;
+
+    padding:6px 16px;
+
+    border-radius:30px;
+
+    font-size:13px;
+
+    font-weight:600;
+
+}
+
+.active{
+
+    background:#e8f8ef;
+
+    color:#16a34a;
+
+}
+
+.inactive{
+
+    background:#ffe8e8;
+
+    color:#dc2626;
+
+}
+
+
+
+
+
+/*=========================
+      ACTION BUTTONS
+=========================*/
+
+.action-btns{
+
+    display:flex;
+
+    gap:10px;
+
+}
+
+.action-btns button{
+
+    width:38px;
+
+    height:38px;
+
+    border:none;
+
+    border-radius:10px;
+
+    cursor:pointer;
+
+    display:flex;
+
+    justify-content:center;
+
+    align-items:center;
+
+    transition:.3s;
+
+}
+
+.action-btns button:nth-child(1){
+
+    background:#eef4ff;
+
+    color:#2563eb;
+
+}
+
+.action-btns button:nth-child(2){
+
+    background:#f3f0ff;
+
+    color:#6d4cff;
+
+}
+
+.action-btns button:nth-child(3){
+
+    background:#ffe8e8;
+
+    color:#dc2626;
+
+}
+
+.action-btns button:hover{
+
+    transform:translateY(-2px);
+
+}
+
+
+
+
+
+/*=========================
+      RESPONSIVE
+=========================*/
+
+@media(max-width:900px){
+
+    .faculty-table{
+
+        overflow-x:auto;
+
+    }
+
+}
+
+@media(max-width:768px){
+
+    .page-header{
+
+        flex-direction:column;
+
+        align-items:stretch;
+
+    }
+
+    .search-box{
+
+        min-width:100%;
+
+    }
+
+    .add-btn{
+
+        width:100%;
+
+        justify-content:center;
+
+    }
+
+}
+
+@media(max-width:480px){
+
+    .search-box{
+
+        height:48px;
+
+    }
+
+    .add-btn{
+
+        height:48px;
+
+    }
+
+}

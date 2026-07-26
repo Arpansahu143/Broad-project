@@ -1,0 +1,247 @@
+.notification-list{
+
+    display:flex;
+
+    flex-direction:column;
+
+    gap:25px;
+
+}
+
+
+
+
+
+/*=========================
+      NOTIFICATION CARD
+=========================*/
+
+.notification-card{
+
+    background:#ffffff;
+
+    border-radius:20px;
+
+    padding:28px;
+
+    display:flex;
+
+    gap:25px;
+
+    align-items:flex-start;
+
+    box-shadow:0 10px 30px rgba(0,0,0,.08);
+
+    transition:.35s;
+
+    border-left:6px solid #6d4cff;
+
+}
+
+.notification-card:hover{
+
+    transform:translateY(-5px);
+
+    box-shadow:0 18px 40px rgba(0,0,0,.12);
+
+}
+
+
+
+
+
+/*=========================
+      ICON
+=========================*/
+
+.notification-icon{
+
+    width:70px;
+
+    height:70px;
+
+    border-radius:18px;
+
+    display:flex;
+
+    justify-content:center;
+
+    align-items:center;
+
+    font-size:28px;
+
+    color:white;
+
+    flex-shrink:0;
+
+}
+
+.exam .notification-icon{
+
+    background:#6d4cff;
+
+}
+
+.event .notification-icon{
+
+    background:#00b894;
+
+}
+
+.announcement .notification-icon{
+
+    background:#3498db;
+
+}
+
+.important .notification-icon{
+
+    background:#e74c3c;
+
+}
+
+.placement .notification-icon{
+
+    background:#f39c12;
+
+}
+
+
+
+
+
+/*=========================
+      CONTENT
+=========================*/
+
+.notification-content{
+
+    flex:1;
+
+}
+
+.notification-top{
+
+    display:flex;
+
+    justify-content:space-between;
+
+    align-items:center;
+
+    margin-bottom:12px;
+
+}
+
+.notification-top span{
+
+    background:#f3f0ff;
+
+    color:#6d4cff;
+
+    padding:6px 14px;
+
+    border-radius:30px;
+
+    font-size:13px;
+
+    font-weight:600;
+
+}
+
+.notification-top small{
+
+    color:#888;
+
+    font-size:13px;
+
+}
+
+.notification-content h3{
+
+    font-size:22px;
+
+    color:#222;
+
+    margin-bottom:12px;
+
+}
+
+.notification-content p{
+
+    color:#666;
+
+    line-height:1.7;
+
+    font-size:15px;
+
+}
+
+
+
+
+
+/*=========================
+      RESPONSIVE
+=========================*/
+
+@media(max-width:768px){
+
+    .notification-card{
+
+        flex-direction:column;
+
+        gap:18px;
+
+        padding:22px;
+
+    }
+
+    .notification-top{
+
+        flex-direction:column;
+
+        align-items:flex-start;
+
+        gap:10px;
+
+    }
+
+    .notification-content h3{
+
+        font-size:20px;
+
+    }
+
+}
+
+@media(max-width:480px){
+
+    .notification-card{
+
+        padding:18px;
+
+    }
+
+    .notification-icon{
+
+        width:58px;
+
+        height:58px;
+
+        font-size:22px;
+
+    }
+
+    .notification-content h3{
+
+        font-size:18px;
+
+    }
+
+    .notification-content p{
+
+        font-size:14px;
+
+    }
+
+}
