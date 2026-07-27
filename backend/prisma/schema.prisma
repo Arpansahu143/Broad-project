@@ -4,27 +4,55 @@ generator client {
 
 datasource db {
   provider = "postgresql"
-  url = env("DATABASE_URL")
+  url      = env("DATABASE_URL")
 }
 
-// This is a starter enterprise schema template.
-// Core models are implemented; remaining models are scaffolded
-// for extension in later phases.
+enum UserRole {
+  ADMIN
+  FACULTY
+  STUDENT
+}
 
-enum UserRole { ADMIN FACULTY STUDENT }
-enum UserStatus { ACTIVE INACTIVE SUSPENDED }
-enum Gender { MALE FEMALE OTHER }
-enum Semester { SEM_1 SEM_2 SEM_3 SEM_4 SEM_5 SEM_6 SEM_7 SEM_8 }
-enum BloodGroup { A_POSITIVE A_NEGATIVE B_POSITIVE B_NEGATIVE AB_POSITIVE AB_NEGATIVE O_POSITIVE O_NEGATIVE }
-enum FacultyDesignation { ASSISTANT_PROFESSOR ASSOCIATE_PROFESSOR PROFESSOR HOD DEAN LAB_ASSISTANT GUEST_FACULTY }
-enum CourseType { THEORY PRACTICAL LAB PROJECT ELECTIVE }
-enum AttendanceStatus { PRESENT ABSENT LATE }
-enum ExamType { QUIZ ASSIGNMENT MID_SEM END_SEM PRACTICAL VIVA }
-enum FeeType { TUITION EXAMINATION HOSTEL LIBRARY TRANSPORT OTHER }
-enum PaymentStatus { PENDING PAID FAILED REFUNDED }
-enum NotificationType { INFO SUCCESS WARNING ERROR }
-enum DocumentType { PROFILE_PHOTO ASSIGNMENT CERTIFICATE ID_CARD MARKSHEET OTHER }
-enum BorrowStatus { BORROWED RETURNED OVERDUE }
-enum EventType { ACADEMIC CULTURAL SPORTS WORKSHOP SEMINAR OTHER }
+enum UserStatus {
+  ACTIVE
+  INACTIVE
+  SUSPENDED
+}
 
-// Continue building from here...
+model User {
+  id            String      @id @default(uuid())
+  firstName     String
+  lastName      String
+  email         String      @unique
+  password      String
+  role          UserRole
+  status        UserStatus  @default(ACTIVE)
+
+  profileImage  String?
+  emailVerified Boolean     @default(false)
+  lastLoginAt   DateTime?
+
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+
+  isDeleted     Boolean     @default(false)
+
+  refreshTokens RefreshToken[]
+
+  @@index([email])
+  @@index([role])
+}
+
+model RefreshToken {
+  id         String   @id @default(uuid())
+  token      String   @unique
+  expiresAt  DateTime
+  revoked    Boolean  @default(false)
+
+  userId     String
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  createdAt  DateTime @default(now())
+
+  @@index([userId])
+}
