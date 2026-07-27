@@ -1,10 +1,15 @@
-import dotenv from "dotenv";
-dotenv.config();
-
 import app from "./app.js";
+import { env } from "./config/env.js";
+import logger from "./config/logger.js";
 
-const PORT = process.env.PORT || 8000;
+app.listen(env.PORT, () => {
+  logger.info(`Server running on port ${env.PORT}`);
 
-app.listen(PORT, () => {
-    console.log(`🚀 Server running on http://localhost:${PORT}`);
+  console.log(`
+==========================================
+ University MIS Backend Started
+ Environment : ${env.NODE_ENV}
+ Port        : ${env.PORT}
+==========================================
+`);
 });
