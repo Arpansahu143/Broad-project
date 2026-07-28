@@ -1,8 +1,18 @@
 import DashboardLayout from "../../components/DashboardLayout";
 import "./Profile.css";
+import { useEffect, useState } from "react";
 
 function Profile() {
 
+    const [user, setUser] = useState(null);
+
+useEffect(() => {
+  const loggedInUser = JSON.parse(localStorage.getItem("user"));
+
+  if (loggedInUser) {
+    setUser(loggedInUser);
+  }
+}, []);
     return (
 
         <DashboardLayout
@@ -30,10 +40,8 @@ function Profile() {
                         <div>
 
                             <h2>
-
-                                Arpan Sahu
-
-                            </h2>
+    {user ? `${user.firstName} ${user.lastName}` : "Loading..."}
+</h2>
 
                             <p>
 
@@ -57,7 +65,7 @@ function Profile() {
 
                             <label>Email</label>
 
-                            <p>arpan@soa.ac.in</p>
+                            <p>{user?.email || "Loading..."}</p>
 
                         </div>
 
