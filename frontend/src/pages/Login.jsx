@@ -1,3 +1,4 @@
+import api from "../api/axios";
 import "./Login.css";
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
@@ -15,53 +16,98 @@ import {
   FaArrowRight,
   FaEnvelope,
   FaArrowLeft,
-  FaCheckCircle
+  FaCheckCircle,
 } from "react-icons/fa";
 
 function Login() {
   const navigate = useNavigate();
 
-  // Login states
+  // =========================
+  // Login States
+  // =========================
   const [role, setRole] = useState("student");
   const [showPassword, setShowPassword] = useState(false);
+
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  // Forgot Password modal/view states
+  // Forgot Password States
   const [isForgotPassword, setIsForgotPassword] = useState(false);
   const [resetEmail, setResetEmail] = useState("");
   const [resetSent, setResetSent] = useState(false);
 
+  // =========================
+  // Change Role
+  // =========================
   const handleRoleChange = (e, selectedRole) => {
     e.preventDefault();
     setRole(selectedRole);
   };
 
-  const handleLoginSubmit = (e) => {
+  // =========================
+  // Login
+  // =========================
+  const handleLoginSubmit = async (e) => {
     e.preventDefault();
 
-    // Explicit switch routing based on selected role
-    switch (role) {
-      case "student":
-        navigate("/student/dashboard");
-        break;
-      case "faculty":
-        navigate("/faculty/dashboard");
-        break;
-      case "admin":
-        navigate("/admin/dashboard");
-        break;
-      default:
-        console.error("Unknown role selected:", role);
-        break;
+    try {
+      const response = await api.post("/auth/login", {
+  email,
+  password,
+});
+
+      const { user, accessToken, refreshToken } = response.data.data;
+
+      // Check selected role with backend role
+      const selectedRole = role.toUpperCase();
+
+      if (user.role !== selectedRole) {
+        alert(
+          `You selected ${role}, but this account belongs to ${user.role}.`
+        );
+        return;
+      }
+
+      // Store Login Information
+      localStorage.setItem("accessToken", accessToken);
+      localStorage.setItem("refreshToken", refreshToken);
+      localStorage.setItem("user", JSON.stringify(user));
+
+      // Navigate
+      switch (user.role) {
+        case "STUDENT":
+          navigate("/student/dashboard");
+          break;
+
+        case "FACULTY":
+          navigate("/faculty/dashboard");
+          break;
+
+        case "ADMIN":
+          navigate("/admin/dashboard");
+          break;
+
+        default:
+          alert("Invalid User Role");
+      }
+    } catch (error) {
+      console.error(error);
+
+      alert(
+        error.response?.data?.message ||
+          "Invalid Email or Password"
+      );
     }
   };
 
+  // =========================
+  // Forgot Password
+  // =========================
   const handleResetSubmit = (e) => {
     e.preventDefault();
+
     if (!resetEmail) return;
 
-    // Simulate sending password reset email
     setResetSent(true);
   };
 
@@ -70,27 +116,26 @@ function Login() {
     setResetSent(false);
     setResetEmail("");
   };
-
-  return (
+    return (
     <div
       className="login-page"
       style={{
-        backgroundImage: "url('/images/college.webp')"
+        backgroundImage: "url('/images/college.webp')",
       }}
     >
       <div className="overlay">
-        {/* Background Decorative Grid Elements */}
         <div className="grid-dots top-left"></div>
         <div className="grid-dots bottom-right"></div>
 
         <div className="login-container">
-          {/* Top Logo Header */}
+          {/* Logo */}
           <div className="logo-header">
             <img
               src="/images/logo.webp"
               alt="University Logo"
               className="university-logo"
             />
+
             <div className="logo-text">
               <h1>
                 UNIVERSITY <span>MIS</span>
@@ -99,15 +144,17 @@ function Login() {
             </div>
           </div>
 
-          {/* Login Card Container */}
           <div className="login-card">
             {!isForgotPassword ? (
-              /* ================= LOGIN FORM ================= */
               <>
                 <h2>Welcome Back!</h2>
-                <p className="login-subtitle">Login to access your account</p>
 
-                {/* Role Switcher Tabs */}
+                <p className="login-subtitle">
+                  Login to access your account
+                </p>
+
+                {/* Role Selector */}
+
                 <div className="role-selector-wrapper">
                   <div className="role-selector">
                     <button
@@ -117,6 +164,7 @@ function Login() {
                     >
                       <FaUserGraduate /> Student
                     </button>
+
                     <button
                       type="button"
                       className={role === "faculty" ? "active" : ""}
@@ -124,6 +172,7 @@ function Login() {
                     >
                       <FaUserTie /> Faculty
                     </button>
+
                     <button
                       type="button"
                       className={role === "admin" ? "active" : ""}
@@ -134,13 +183,15 @@ function Login() {
                   </div>
                 </div>
 
-                {/* Main Login Form */}
+                {/* Login Form */}
+
                 <form onSubmit={handleLoginSubmit}>
                   <div className="input-group">
                     <FaUser className="input-icon" />
+
                     <input
-                      type="text"
-                      placeholder="Enter your Email or Student ID"
+                      type="email"
+                      placeholder="Enter your Email"
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
                       required
@@ -149,6 +200,7 @@ function Login() {
 
                   <div className="input-group">
                     <FaLock className="input-icon" />
+
                     <input
                       type={showPassword ? "text" : "password"}
                       placeholder="Enter your Password"
@@ -156,12 +208,19 @@ function Login() {
                       onChange={(e) => setPassword(e.target.value)}
                       required
                     />
+
                     <button
                       type="button"
                       className="eye-btn"
-                      onClick={() => setShowPassword(!showPassword)}
+                      onClick={() =>
+                        setShowPassword(!showPassword)
+                      }
                     >
-                      {showPassword ? <FaEyeSlash /> : <FaEye />}
+                      {showPassword ? (
+                        <FaEyeSlash />
+                      ) : (
+                        <FaEye />
+                      )}
                     </button>
                   </div>
 
@@ -170,6 +229,7 @@ function Login() {
                       <input type="checkbox" defaultChecked />
                       <span>Remember Me</span>
                     </label>
+
                     <button
                       type="button"
                       className="forgot-password-link"
@@ -179,7 +239,10 @@ function Login() {
                     </button>
                   </div>
 
-                  <button className="login-button" type="submit">
+                  <button
+                    className="login-button"
+                    type="submit"
+                  >
                     <span>Login</span>
                     <FaArrowRight className="btn-arrow" />
                   </button>
@@ -188,51 +251,60 @@ function Login() {
                 <div className="divider">
                   <span>OR</span>
                 </div>
+                                {/* Social Login */}
 
-                {/* Social Authentication Buttons */}
                 <div className="social-buttons">
                   <button type="button" className="social-btn">
                     <FaGoogle className="icon-google" />
                     <span>Login with Google</span>
                   </button>
+
                   <button type="button" className="social-btn">
                     <FaMicrosoft className="icon-microsoft" />
                     <span>Login with Microsoft</span>
                   </button>
+
                   <button type="button" className="social-btn">
                     <FaShieldAlt className="icon-sso" />
                     <span>Login with SSO</span>
                   </button>
                 </div>
 
-                {/* Absolute Redirection to Signup */}
                 <div className="signup-text">
-                  Don't have an account? <Link to="/signup">Sign Up</Link>
+                  Don't have an account?{" "}
+                  <Link to="/signup">Sign Up</Link>
                 </div>
               </>
             ) : (
-              /* ================= FORGOT PASSWORD VIEW ================= */
               <div className="forgot-password-container">
                 {!resetSent ? (
                   <>
                     <h2>Reset Password</h2>
+
                     <p className="login-subtitle">
-                      Enter your registered email address and we'll send you a password reset link.
+                      Enter your registered email address and we'll send you a
+                      password reset link.
                     </p>
 
                     <form onSubmit={handleResetSubmit}>
                       <div className="input-group">
                         <FaEnvelope className="input-icon" />
+
                         <input
                           type="email"
-                          placeholder="Enter your Email address"
+                          placeholder="Enter your Email Address"
                           value={resetEmail}
-                          onChange={(e) => setResetEmail(e.target.value)}
+                          onChange={(e) =>
+                            setResetEmail(e.target.value)
+                          }
                           required
                         />
                       </div>
 
-                      <button className="login-button" type="submit">
+                      <button
+                        className="login-button"
+                        type="submit"
+                      >
                         <span>Send Reset Link</span>
                         <FaArrowRight className="btn-arrow" />
                       </button>
@@ -244,16 +316,22 @@ function Login() {
                         className="back-btn"
                         onClick={resetForgotPasswordState}
                       >
-                        <FaArrowLeft /> Back to Login
+                        <FaArrowLeft />
+                        Back to Login
                       </button>
                     </div>
                   </>
                 ) : (
                   <div className="reset-success-card">
                     <FaCheckCircle className="success-icon" />
+
                     <h2>Reset Link Sent!</h2>
+
                     <p className="login-subtitle">
-                      We have sent a password reset link to <strong>{resetEmail}</strong>. Please check your inbox.
+                      We have sent a password reset link to{" "}
+                      <strong>{resetEmail}</strong>.
+                      <br />
+                      Please check your inbox.
                     </p>
 
                     <button

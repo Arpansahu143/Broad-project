@@ -1,5 +1,6 @@
-import React from 'react';
+import React, { useEffect, useState } from "react";
 import './StudentDashboard.css';
+import { NavLink } from "react-router-dom";
 
 import {
   FaUniversity, FaRegIdCard, FaUserGraduate, FaBook,
@@ -10,6 +11,15 @@ import {
 import { BiSearch } from 'react-icons/bi';
 
 function StudentDashboard() {
+  const [user, setUser] = useState(null);
+
+useEffect(() => {
+  const loggedInUser = JSON.parse(localStorage.getItem("user"));
+
+  if (loggedInUser) {
+    setUser(loggedInUser);
+  }
+}, []);
   // Stat cards for Student View
   const statsData = [
     { label: "Overall GPA", value: "3.84", change: "+0.12", icon: <FaGraduationCap />, iconColor: "#6c4cf1", trendColor: "#22c55e" },
@@ -20,13 +30,32 @@ function StudentDashboard() {
 
   // Student Sidebar Menu
   const menuItems = [
-    { label: "Dashboard", icon: <FaRegIdCard />, active: true },
-    { label: "Attendance", icon: <FaUserClock /> },
-    { label: "Courses", icon: <FaBook /> },
-    { label: "Notifications", icon: <FaBell /> },
-    { label: "Profile", icon: <FaUserGraduate /> },
-    { label: "Settings", icon: <FaCog /> },
-  ];
+  {
+    label: "Dashboard",
+    icon: <FaRegIdCard />,
+    path: "/student/dashboard",
+  },
+  {
+    label: "Attendance",
+    icon: <FaUserClock />,
+    path: "/student/attendance",
+  },
+  {
+    label: "Courses",
+    icon: <FaBook />,
+    path: "/student/courses",
+  },
+  {
+    label: "Notifications",
+    icon: <FaBell />,
+    path: "/student/notifications",
+  },
+  {
+    label: "Profile",
+    icon: <FaUserGraduate />,
+    path: "/student/profile",
+  }
+];
 
   // Enrolled Courses with Attendance Progress
   const courseProgress = [
@@ -56,19 +85,29 @@ function StudentDashboard() {
         </div>
 
         <nav className="side-menu">
-          {menuItems.map((item, idx) => (
-            <a key={idx} href="#" className={item.active ? "menu-item active" : "menu-item"}>
-              {item.icon}
-              <span>{item.label}</span>
-            </a>
-          ))}
-        </nav>
+  {menuItems.map((item, idx) => (
+    <NavLink
+      key={idx}
+      to={item.path}
+      className={({ isActive }) =>
+        isActive ? "menu-item active" : "menu-item"
+      }
+    >
+      {item.icon}
+      <span>{item.label}</span>
+    </NavLink>
+  ))}
+</nav>
 
         <div className="profile-section">
           <div className="profile-img-placeholder student-avatar">RK</div>
           <div className="profile-info">
-            <span className="name">Rohan Kumar</span>
-            <span className="role">B.Tech CSE • Sem 5</span>
+            <span className="name">
+  {user ? `${user.firstName} ${user.lastName}` : "Loading..."}
+</span>
+            <span className="role">
+  {user?.role || "STUDENT"}
+</span>
           </div>
           <FaChevronRight className="p-arrow" />
         </div>
@@ -93,7 +132,9 @@ function StudentDashboard() {
 
         <section className="dashboard-hero">
           <h1>Student Dashboard</h1>
-          <h2>Welcome back, Rohan! 👋</h2>
+          <h2>
+  Welcome back, {user?.firstName || "Student"}! 👋
+</h2>
           <p>Here is your current academic performance and schedule overview.</p>
         </section>
 
