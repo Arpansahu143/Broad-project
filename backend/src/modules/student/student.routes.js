@@ -2,6 +2,7 @@ import { Router } from "express";
 
 import studentController from "./student.controller.js";
 
+
 import {
   createStudentValidation,
   updateStudentValidation,
