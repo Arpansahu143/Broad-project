@@ -2,14 +2,24 @@ import app from "./app.js";
 import { env } from "./config/env.js";
 import logger from "./config/logger.js";
 
-app.listen(env.PORT, () => {
-  logger.info(`Server running on port ${env.PORT}`);
+const PORT = env.PORT || 5000;
 
-  console.log(`
-==========================================
- University MIS Backend Started
- Environment : ${env.NODE_ENV}
- Port        : ${env.PORT}
-==========================================
+const server = app.listen(PORT, () => {
+    logger.info(`Server running on port ${PORT}`);
+
+    console.log(`
+======================================================
+🎓        University MIS Backend Started
+======================================================
+
+Environment : ${env.NODE_ENV}
+Port        : ${PORT}
+
+Server URL  : http://localhost:${PORT}
+API Base    : http://localhost:${PORT}/api/v1
+
+======================================================
 `);
 });
+
+export default server;

@@ -60,36 +60,43 @@ model RefreshToken {
 }
 
 model Student {
+
   id String @id @default(uuid())
 
-  // Relation
   userId String @unique
-  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  // Student Details
-  studentId  String @unique
-  department String
-  semester   Int
+  studentId String @unique
 
-  phone      String?
-  address    String?
-  cgpa       Float?
+  departmentId String
+  department Department @relation(fields: [departmentId], references: [id])
+
+  semester Int
+
+  phone String?
+  address String?
+  cgpa Float?
   attendance Float?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   @@index([studentId])
-  @@index([department])
+  @@index([departmentId])
 }
 model Department {
-  id          String   @id @default(uuid())
-  name        String   @unique
-  code        String   @unique
+
+  id String @id @default(uuid())
+
+  name String @unique
+  code String @unique
   description String?
 
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  students Student[]
 
-  students    Student[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([name])
+  @@index([code])
 }
