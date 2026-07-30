@@ -1,0 +1,283 @@
+.top-navbar{
+
+    width:100%;
+    height:80px;
+
+    background:white;
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:space-between;
+
+    padding:0 35px;
+
+    border-bottom:1px solid #ececec;
+
+    position:sticky;
+
+    top:0;
+
+    z-index:999;
+
+}
+
+
+
+
+
+
+/* LEFT */
+
+.navbar-left h2{
+
+    color:#222;
+
+    font-size:28px;
+
+    font-weight:700;
+
+}
+
+
+
+
+
+
+/* CENTER */
+
+.navbar-center{
+
+    flex:1;
+
+    display:flex;
+
+    justify-content:center;
+
+}
+
+.search-box{
+
+    width:420px;
+
+    height:48px;
+
+    background:#f4f5fb;
+
+    border-radius:12px;
+
+    display:flex;
+
+    align-items:center;
+
+    gap:12px;
+
+    padding:0 18px;
+
+}
+
+.search-box svg{
+
+    color:#777;
+
+}
+
+.search-box input{
+
+    width:100%;
+
+    border:none;
+
+    background:transparent;
+
+    outline:none;
+
+    font-size:15px;
+
+}
+
+
+
+
+
+
+/* RIGHT */
+
+.navbar-right{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:30px;
+
+}
+
+.notification-btn{
+
+    width:48px;
+
+    height:48px;
+
+    border:none;
+
+    border-radius:12px;
+
+    background:#f4f5fb;
+
+    cursor:pointer;
+
+    position:relative;
+
+    transition:.3s;
+
+}
+
+.notification-btn:hover{
+
+    background:#6247ff;
+
+    color:white;
+
+}
+
+.notification-btn svg{
+
+    font-size:18px;
+
+}
+
+.notification-btn span{
+
+    position:absolute;
+
+    top:-5px;
+
+    right:-5px;
+
+    width:20px;
+
+    height:20px;
+
+    border-radius:50%;
+
+    background:red;
+
+    color:white;
+
+    display:flex;
+
+    justify-content:center;
+
+    align-items:center;
+
+    font-size:11px;
+
+}
+
+
+
+
+
+
+/* PROFILE */
+
+.profile-section{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:12px;
+
+}
+
+.profile-section svg{
+
+    font-size:42px;
+
+    color:#6247ff;
+
+}
+
+.profile-section h4{
+
+    font-size:15px;
+
+    color:#222;
+
+}
+
+.profile-section p{
+
+    font-size:13px;
+
+    color:#777;
+
+}
+
+
+
+
+
+
+/* RESPONSIVE */
+
+@media(max-width:900px){
+
+    .search-box{
+
+        width:260px;
+
+    }
+
+}
+
+@media(max-width:768px){
+
+    .top-navbar{
+
+        padding:15px;
+
+        flex-direction:column;
+
+        height:auto;
+
+        gap:15px;
+
+    }
+
+    .navbar-center{
+
+        width:100%;
+
+    }
+
+    .search-box{
+
+        width:100%;
+
+    }
+
+    .navbar-right{
+
+        width:100%;
+
+        justify-content:space-between;
+
+    }
+
+}
+
+@media(max-width:500px){
+
+    .profile-section h4,
+
+    .profile-section p{
+
+        display:none;
+
+    }
+
+}

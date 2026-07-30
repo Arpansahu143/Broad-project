@@ -1,0 +1,73 @@
+@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap");
+
+.student-avatar {
+  background: #6c4cf1 !important;
+}
+
+/* Student Task List Cards */
+.student-task-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.task-card {
+  background: #f9fbfd;
+  border: 1px solid #e8ecf4;
+  border-radius: 12px;
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.task-header-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.task-course {
+  font-size: 11px;
+  font-weight: 700;
+  color: #635bff;
+  background: #635bff15;
+  padding: 2px 8px;
+  border-radius: 6px;
+}
+
+.task-badge {
+  font-size: 10px;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: 6px;
+}
+
+.task-badge.urgent {
+  background: #ef444415;
+  color: #ef4444;
+}
+
+.task-badge.pending {
+  background: #f59e0b15;
+  color: #d97706;
+}
+
+.task-badge.upcoming {
+  background: #34d39915;
+  color: #10b981;
+}
+
+.task-title {
+  font-size: 13.5px;
+  font-weight: 600;
+  color: #121829;
+}
+
+.task-due {
+  font-size: 11.5px;
+  color: #727b96;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}

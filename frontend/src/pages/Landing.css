@@ -1,0 +1,483 @@
+/* ===========================
+   GOOGLE FONT
+=========================== */
+
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap');
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:'Poppins',sans-serif;
+}
+
+html,
+body,
+#root{
+    width:100%;
+    height:100%;
+}
+
+/* ===========================
+   LANDING PAGE
+=========================== */
+
+.landing{
+
+    width:100%;
+    height:100vh;
+
+    background-size:cover;
+    background-position:center;
+    background-repeat:no-repeat;
+
+    position:relative;
+
+}
+
+.overlay{
+
+    width:100%;
+    height:100%;
+
+    background:rgba(14,18,40,.60);
+
+    display:flex;
+    flex-direction:column;
+
+}
+
+/* ===========================
+   NAVBAR
+=========================== */
+
+.navbar{
+
+    width:100%;
+    height:90px;
+
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+
+    padding:0 90px;
+
+}
+
+.logo{
+
+    display:flex;
+    align-items:center;
+
+    gap:15px;
+
+}
+
+.logo img{
+
+    width:60px;
+    height:60px;
+    object-fit:contain;
+
+}
+
+.logo h2{
+
+    color:white;
+
+    font-size:32px;
+
+    font-weight:700;
+
+}
+
+.logo p{
+
+    color:#d9d9d9;
+
+    font-size:14px;
+
+}
+
+.login-btn{
+
+    width:140px;
+    height:50px;
+
+    border:none;
+
+    border-radius:10px;
+
+    cursor:pointer;
+
+    color:white;
+
+    background:#6C4CF1;
+
+    font-size:17px;
+
+    font-weight:600;
+
+    transition:.3s;
+
+}
+
+.login-btn:hover{
+
+    background:#5638d8;
+
+    transform:translateY(-3px);
+
+}
+
+/* ===========================
+ HERO
+=========================== */
+
+.hero{
+
+    flex:1;
+
+    display:flex;
+    align-items:center;
+
+    padding-left:90px;
+
+}
+
+.hero-content{
+
+    width:650px;
+
+}
+
+.hero-content h1{
+
+    color:white;
+
+    font-size:68px;
+
+    line-height:1.15;
+
+    margin-bottom:30px;
+
+    font-weight:800;
+
+}
+
+.hero-content p{
+
+    color:#f1f1f1;
+
+    font-size:20px;
+
+    line-height:38px;
+
+    margin-bottom:40px;
+
+}
+
+.hero-buttons{
+
+    display:flex;
+
+    gap:20px;
+
+}
+
+.primary-btn{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:10px;
+
+    padding:18px 40px;
+
+    border:none;
+
+    cursor:pointer;
+
+    border-radius:10px;
+
+    background:#6C4CF1;
+
+    color:white;
+
+    font-size:18px;
+
+    font-weight:600;
+
+    transition:.3s;
+
+}
+
+.primary-btn:hover{
+
+    transform:translateY(-5px);
+
+    background:#5638d8;
+
+}
+/* ===========================
+   FOOTER
+=========================== */
+
+footer{
+
+    width:100%;
+
+    height:70px;
+
+    display:flex;
+
+    justify-content:center;
+
+    align-items:center;
+
+    color:#d8d8d8;
+
+    font-size:15px;
+
+    border-top:1px solid rgba(255,255,255,.08);
+
+}
+
+/* ===========================
+   GLASS EFFECT
+=========================== */
+
+.navbar{
+
+    backdrop-filter:blur(12px);
+
+    background:rgba(255,255,255,.03);
+
+}
+
+.hero-content{
+
+    animation:fadeLeft 1s ease;
+
+}
+
+/* ===========================
+   ANIMATIONS
+=========================== */
+
+@keyframes fadeLeft{
+
+    from{
+
+        opacity:0;
+
+        transform:translateX(-80px);
+
+    }
+
+    to{
+
+        opacity:1;
+
+        transform:translateX(0);
+
+    }
+
+}
+
+@keyframes fadeTop{
+
+    from{
+
+        opacity:0;
+
+        transform:translateY(-30px);
+
+    }
+
+    to{
+
+        opacity:1;
+
+        transform:translateY(0);
+
+    }
+
+}
+
+.logo{
+
+    animation:fadeTop .8s ease;
+
+}
+
+.login-btn{
+
+    animation:fadeTop .8s ease;
+
+}
+
+/* ===========================
+   RESPONSIVE
+=========================== */
+
+@media(max-width:1100px){
+
+    .navbar{
+
+        padding:0 40px;
+
+    }
+
+    .hero{
+
+        padding:0 40px;
+
+    }
+
+    .hero-content{
+
+        width:100%;
+
+    }
+
+    .hero-content h1{
+
+        font-size:52px;
+
+    }
+
+    .hero-content p{
+
+        font-size:18px;
+
+        line-height:34px;
+
+    }
+
+}
+
+@media(max-width:768px){
+
+    .navbar{
+
+        padding:20px;
+
+        height:auto;
+
+        flex-direction:column;
+
+        gap:20px;
+
+    }
+
+    .logo{
+
+        flex-direction:column;
+
+        text-align:center;
+
+    }
+
+    .logo img{
+
+        width:70px;
+
+        height:70px;
+
+    }
+
+    .logo h2{
+
+        font-size:26px;
+
+    }
+
+    .hero{
+
+        justify-content:center;
+
+        text-align:center;
+
+        padding:30px;
+
+    }
+
+    .hero-content h1{
+
+        font-size:42px;
+
+    }
+
+    .hero-content p{
+
+        font-size:17px;
+
+        line-height:30px;
+
+    }
+
+    .hero-buttons{
+
+        justify-content:center;
+
+    }
+
+}
+
+@media(max-width:500px){
+
+    .hero-content h1{
+
+        font-size:34px;
+
+    }
+
+    .hero-content p{
+
+        font-size:15px;
+
+        line-height:28px;
+
+    }
+
+    .primary-btn{
+
+        width:100%;
+
+        justify-content:center;
+
+    }
+
+    .login-btn{
+
+        width:180px;
+
+    }
+
+}
+
+/* ===========================
+   SCROLLBAR
+=========================== */
+
+::-webkit-scrollbar{
+
+    width:10px;
+
+}
+
+::-webkit-scrollbar-thumb{
+
+    background:#6C4CF1;
+
+    border-radius:10px;
+
+}
+
+::-webkit-scrollbar-track{
+
+    background:#101010;
+
+}
