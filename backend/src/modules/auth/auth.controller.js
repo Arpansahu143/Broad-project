@@ -16,6 +16,18 @@ class AuthController {
     );
   });
 
+  createUserByAdmin = asyncHandler(async (req, res) => {
+    const user = await authService.createUserByAdmin(req.body);
+
+    res.status(HTTP_STATUS.CREATED).json(
+      new ApiResponse(
+        HTTP_STATUS.CREATED,
+        "User created successfully",
+        user
+      )
+    );
+  });
+
   login = asyncHandler(async (req, res) => {
     const { email, password } = req.body;
 

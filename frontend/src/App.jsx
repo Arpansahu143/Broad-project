@@ -1,4 +1,5 @@
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import ProtectedRoute from "./components/ProtectedRoute";
 
 // ================= PUBLIC =================
 import Landing from "./pages/Landing";
@@ -35,24 +36,24 @@ function App() {
         <Route path="/signup" element={<Signup />} />
 
         {/* ================= STUDENT ================= */}
-        <Route path="/student/dashboard" element={<StudentDashboard />} />
-        <Route path="/student/profile" element={<Profile />} />
-        <Route path="/student/courses" element={<Courses />} />
-        <Route path="/student/attendance" element={<Attendance />} />
-        <Route path="/student/notifications" element={<Notifications />} />
+        <Route path="/student/dashboard" element={<ProtectedRoute allowedRoles={["STUDENT"]}><StudentDashboard /></ProtectedRoute>} />
+        <Route path="/student/profile" element={<ProtectedRoute allowedRoles={["STUDENT"]}><Profile /></ProtectedRoute>} />
+        <Route path="/student/courses" element={<ProtectedRoute allowedRoles={["STUDENT"]}><Courses /></ProtectedRoute>} />
+        <Route path="/student/attendance" element={<ProtectedRoute allowedRoles={["STUDENT"]}><Attendance /></ProtectedRoute>} />
+        <Route path="/student/notifications" element={<ProtectedRoute allowedRoles={["STUDENT"]}><Notifications /></ProtectedRoute>} />
 
         {/* ================= FACULTY ================= */}
-        <Route path="/faculty/dashboard" element={<FacultyDashboard />} />
-        <Route path="/faculty/students" element={<Students />} />
-        <Route path="/faculty/courses" element={<FacultyCourses />} />
-        <Route path="/faculty/attendance" element={<FacultyAttendance />} />
+        <Route path="/faculty/dashboard" element={<ProtectedRoute allowedRoles={["FACULTY"]}><FacultyDashboard /></ProtectedRoute>} />
+        <Route path="/faculty/students" element={<ProtectedRoute allowedRoles={["FACULTY"]}><Students /></ProtectedRoute>} />
+        <Route path="/faculty/courses" element={<ProtectedRoute allowedRoles={["FACULTY"]}><FacultyCourses /></ProtectedRoute>} />
+        <Route path="/faculty/attendance" element={<ProtectedRoute allowedRoles={["FACULTY"]}><FacultyAttendance /></ProtectedRoute>} />
 
         {/* ================= ADMIN ================= */}
-        <Route path="/admin/dashboard" element={<AdminDashboard />} />
-        <Route path="/admin/students" element={<AdminStudents />} />
-        <Route path="/admin/faculty" element={<Faculty />} />
-        <Route path="/admin/courses" element={<AdminCourses />} />
-        <Route path="/admin/reports" element={<Reports />} />
+        <Route path="/admin/dashboard" element={<ProtectedRoute allowedRoles={["ADMIN"]}><AdminDashboard /></ProtectedRoute>} />
+        <Route path="/admin/students" element={<ProtectedRoute allowedRoles={["ADMIN"]}><AdminStudents /></ProtectedRoute>} />
+        <Route path="/admin/faculty" element={<ProtectedRoute allowedRoles={["ADMIN"]}><Faculty /></ProtectedRoute>} />
+        <Route path="/admin/courses" element={<ProtectedRoute allowedRoles={["ADMIN"]}><AdminCourses /></ProtectedRoute>} />
+        <Route path="/admin/reports" element={<ProtectedRoute allowedRoles={["ADMIN"]}><Reports /></ProtectedRoute>} />
 
         {/* ================= FALLBACK ROUTE ================= */}
         {/* Redirects any unknown/invalid URLs back to Login */}

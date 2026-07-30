@@ -1,3 +1,4 @@
+import api from "../api/axios";
 import "./Signup.css";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -36,7 +37,7 @@ function Signup() {
     setRole(selectedRole);
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
     if (password !== confirmPassword) {
@@ -44,21 +45,52 @@ function Signup() {
       return;
     }
 
-    // Handle signup logic / API call here
-    // Direct routing based on selected role after account creation
-    switch (role) {
-      case "student":
-        navigate("/student/dashboard");
-        break;
-      case "faculty":
-        navigate("/faculty/dashboard");
-        break;
-      case "admin":
-        navigate("/admin/dashboard");
-        break;
-      default:
-        console.error("Unknown role selected:", role);
-        break;
+    // Backend splits full name into firstName/lastName.
+    const nameParts = fullName.trim().split(/\s+/);
+    const firstName = nameParts[0] || "";
+    const lastName = nameParts.slice(1).join(" ") || firstName;
+
+    try {
+      const response = await api.post("/auth/register", {
+        firstName,
+        lastName,
+        email,
+        password,
+        role: role.toUpperCase(),
+      });
+
+      const { user, accessToken, refreshToken } = response.data.data;
+
+      // Store login info immediately, same as the Login page,
+      // since registration also returns valid tokens.
+      localStorage.setItem("accessToken", accessToken);
+      localStorage.setItem("refreshToken", refreshToken);
+      localStorage.setItem("user", JSON.stringify(user));
+
+      switch (user.role) {
+        case "STUDENT":
+          navigate("/student/dashboard");
+          break;
+        case "FACULTY":
+          navigate("/faculty/dashboard");
+          break;
+        case "ADMIN":
+          navigate("/admin/dashboard");
+          break;
+        default:
+          navigate("/login");
+      }
+    } catch (error) {
+      console.error(error);
+      const fieldErrors = error.response?.data?.errors;
+      if (Array.isArray(fieldErrors) && fieldErrors.length > 0) {
+        alert(fieldErrors.map((e) => e.msg).join("\n"));
+      } else {
+        alert(
+          error.response?.data?.message ||
+            "Something went wrong during signup. Please try again."
+        );
+      }
     }
   };
 
@@ -180,6 +212,9 @@ function Signup() {
                   {showPassword ? <FaEyeSlash /> : <FaEye />}
                 </button>
               </div>
+              <p style={{ fontSize: "0.8rem", color: "#9ca3af", margin: "-8px 0 12px 4px" }}>
+                At least 8 characters, with an uppercase letter, a lowercase letter, and a number.
+              </p>
 
               <div className="input-group">
                 <FaLock className="input-icon" />

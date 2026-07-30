@@ -1,16 +1,17 @@
 import React, { useEffect, useState } from "react";
 import './StudentDashboard.css';
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 
 import {
   FaUniversity, FaRegIdCard, FaUserGraduate, FaBook,
   FaUserClock, FaRegClipboard, FaBell, FaCog, FaChevronRight,
   FaRegCalendarAlt, FaAngleDown, FaClock, FaExclamationTriangle,
-  FaCheckCircle, FaGraduationCap
+  FaCheckCircle, FaGraduationCap, FaSignOutAlt
 } from 'react-icons/fa';
 import { BiSearch } from 'react-icons/bi';
 
 function StudentDashboard() {
+  const navigate = useNavigate();
   const [user, setUser] = useState(null);
 
 useEffect(() => {
@@ -20,6 +21,13 @@ useEffect(() => {
     setUser(loggedInUser);
   }
 }, []);
+
+  const handleLogout = () => {
+    localStorage.removeItem("accessToken");
+    localStorage.removeItem("refreshToken");
+    localStorage.removeItem("user");
+    navigate("/login");
+  };
   // Stat cards for Student View
   const statsData = [
     { label: "Overall GPA", value: "3.84", change: "+0.12", icon: <FaGraduationCap />, iconColor: "#6c4cf1", trendColor: "#22c55e" },
@@ -110,6 +118,15 @@ useEffect(() => {
 </span>
           </div>
           <FaChevronRight className="p-arrow" />
+          <button
+            type="button"
+            className="h-btn"
+            style={{ marginLeft: "8px" }}
+            onClick={handleLogout}
+            title="Logout"
+          >
+            <FaSignOutAlt />
+          </button>
         </div>
       </aside>
 

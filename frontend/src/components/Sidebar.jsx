@@ -1,6 +1,7 @@
 import "./Sidebar.css";
 
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
+import api from "../api/axios";
 
 import {
     FaTachometerAlt,
@@ -15,6 +16,23 @@ import {
 } from "react-icons/fa";
 
 function Sidebar({ role = "admin" }) {
+
+    const navigate = useNavigate();
+
+    const handleLogout = async () => {
+        const refreshToken = localStorage.getItem("refreshToken");
+        try {
+            if (refreshToken) {
+                await api.post("/auth/logout", { refreshToken });
+            }
+        } catch (error) {
+            console.error("Logout request failed:", error);
+        }
+        localStorage.removeItem("accessToken");
+        localStorage.removeItem("refreshToken");
+        localStorage.removeItem("user");
+        navigate("/login");
+    };
 
     const studentMenu = [
 
@@ -200,7 +218,7 @@ function Sidebar({ role = "admin" }) {
 
             <div className="sidebar-footer">
 
-                <button>
+                <button onClick={handleLogout}>
 
                     <FaSignOutAlt />
 

@@ -9,9 +9,9 @@ export const createStudentValidation = [
     .notEmpty()
     .withMessage("Student ID is required"),
 
-  body("department")
+  body("departmentId")
     .notEmpty()
-    .withMessage("Department is required"),
+    .withMessage("Department ID is required"),
 
   body("semester")
     .isInt({ min: 1, max: 8 })
@@ -34,10 +34,10 @@ export const createStudentValidation = [
 ];
 
 export const updateStudentValidation = [
-  body("department")
+  body("departmentId")
     .optional()
     .notEmpty()
-    .withMessage("Department cannot be empty"),
+    .withMessage("Department ID cannot be empty"),
 
   body("semester")
     .optional()

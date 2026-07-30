@@ -9,6 +9,8 @@ import {
 
 import validateRequest from "../../middlewares/validateRequest.js";
 import authMiddleware from "../../middlewares/auth.middleware.js";
+import requireRole from "../../middlewares/role.middleware.js";
+import { ROLES } from "../../core/constants/roles.js";
 
 const router = Router();
 
@@ -19,6 +21,7 @@ const router = Router();
 router.get(
     "/statistics",
     authMiddleware,
+    requireRole(ROLES.ADMIN, ROLES.FACULTY),
     departmentController.statistics
 );
 
@@ -26,42 +29,45 @@ router.get(
    Department CRUD
 =========================== */
 
-// Create Department
+// Create Department — ADMIN only
 router.post(
     "/",
     authMiddleware,
+    requireRole(ROLES.ADMIN),
     createDepartmentValidation,
     validateRequest,
     departmentController.create
 );
 
-// Get All Departments
+// Get All Departments — any authenticated user
 router.get(
     "/",
     authMiddleware,
     departmentController.getAll
 );
 
-// Get Department By ID
+// Get Department By ID — any authenticated user
 router.get(
     "/:id",
     authMiddleware,
     departmentController.getById
 );
 
-// Update Department
+// Update Department — ADMIN only
 router.put(
     "/:id",
     authMiddleware,
+    requireRole(ROLES.ADMIN),
     updateDepartmentValidation,
     validateRequest,
     departmentController.update
 );
 
-// Delete Department
+// Delete Department — ADMIN only
 router.delete(
     "/:id",
     authMiddleware,
+    requireRole(ROLES.ADMIN),
     departmentController.delete
 );
 

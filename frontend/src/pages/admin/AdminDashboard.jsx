@@ -1,4 +1,5 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import './AdminDashboard.css';
 // Make sure to install: charts.css
 import 'charts.css';
@@ -10,11 +11,29 @@ import {
   FaBuilding, FaCalendarAlt, FaChartLine, FaRegFileAlt, FaCog,
   FaBell, FaAngleDown, FaUsers, FaPercent, FaMoneyBillWave,
   FaFileAlt, FaChevronRight, FaRegCalendarAlt, FaAngleRight,
-  FaRegTimesCircle
+  FaRegTimesCircle, FaSignOutAlt
 } from 'react-icons/fa';
 import { BiSearch } from 'react-icons/bi';
 
 function AdminDashboard() {
+  const navigate = useNavigate();
+  const [user, setUser] = useState(null);
+
+  useEffect(() => {
+    const loggedInUser = JSON.parse(localStorage.getItem("user"));
+
+    if (loggedInUser) {
+      setUser(loggedInUser);
+    }
+  }, []);
+
+  const handleLogout = () => {
+    localStorage.removeItem("accessToken");
+    localStorage.removeItem("refreshToken");
+    localStorage.removeItem("user");
+    navigate("/login");
+  };
+
   // 1. Data for the Stat Cards
   const statsData = [
     { label: "Total Students", value: "12,532", change: "8.2%", icon: <FaUserGraduate />, iconColor: "#6c4cf1", trendColor: "#22c55e" },
@@ -81,12 +100,25 @@ function AdminDashboard() {
         </nav>
 
         <div className="profile-section">
-          <div className="profile-img-placeholder">AS</div>
+          <div className="profile-img-placeholder">
+            {user ? `${user.firstName?.[0] || ""}${user.lastName?.[0] || ""}` : "AD"}
+          </div>
           <div className="profile-info">
-            <span className="name">Arpan Sahu</span>
-            <span className="role">Administrator</span>
+            <span className="name">
+              {user ? `${user.firstName} ${user.lastName}` : "Loading..."}
+            </span>
+            <span className="role">{user?.role || "Administrator"}</span>
           </div>
           <FaChevronRight className="p-arrow" />
+          <button
+            type="button"
+            className="h-btn"
+            style={{ marginLeft: "8px" }}
+            onClick={handleLogout}
+            title="Logout"
+          >
+            <FaSignOutAlt />
+          </button>
         </div>
       </aside>
 
@@ -110,7 +142,7 @@ function AdminDashboard() {
 
         <section className="dashboard-hero">
           <h1>Dashboard</h1>
-          <h2>Welcome back, Arpan! 👋</h2>
+          <h2>Welcome back, {user?.firstName || "Admin"}! 👋</h2>
           <p>Here's your university overview.</p>
         </section>
 

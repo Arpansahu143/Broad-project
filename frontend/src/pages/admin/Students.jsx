@@ -1,5 +1,7 @@
 import DashboardLayout from "../../components/DashboardLayout";
 import "./Students.css";
+import { useEffect, useState } from "react";
+import api from "../../api/axios";
 
 import {
 
@@ -17,73 +19,27 @@ import {
 
 function Students(){
 
-    const students=[
+    const [students, setStudents] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
 
-        {
+    useEffect(() => {
+        const fetchStudents = async () => {
+            try {
+                const response = await api.get("/students");
+                setStudents(response.data.data);
+            } catch (err) {
+                console.error(err);
+                setError(
+                    err.response?.data?.message || "Failed to load students."
+                );
+            } finally {
+                setLoading(false);
+            }
+        };
 
-            id:"SOA230101",
-
-            name:"Rahul Sharma",
-
-            department:"CSE",
-
-            semester:"5th",
-
-            email:"rahul@soa.ac.in",
-
-            status:"Active"
-
-        },
-
-        {
-
-            id:"SOA230102",
-
-            name:"Priya Das",
-
-            department:"ECE",
-
-            semester:"3rd",
-
-            email:"priya@soa.ac.in",
-
-            status:"Active"
-
-        },
-
-        {
-
-            id:"SOA230103",
-
-            name:"Amit Kumar",
-
-            department:"IT",
-
-            semester:"7th",
-
-            email:"amit@soa.ac.in",
-
-            status:"Inactive"
-
-        },
-
-        {
-
-            id:"SOA230104",
-
-            name:"Sneha Mishra",
-
-            department:"CSE",
-
-            semester:"1st",
-
-            email:"sneha@soa.ac.in",
-
-            status:"Active"
-
-        }
-
-    ];
+        fetchStudents();
+    }, []);
 
     return(
 
@@ -121,6 +77,10 @@ function Students(){
 
             </div>
 
+            {loading && <p style={{ padding: "16px" }}>Loading students...</p>}
+            {error && <p style={{ padding: "16px", color: "#ef4444" }}>{error}</p>}
+
+            {!loading && !error && (
             <div className="students-table">
 
                 <table>
@@ -153,41 +113,29 @@ function Students(){
 
                             students.map(
 
-                                (student,index)=>(
+                                (student)=>(
 
-                                    <tr key={index}>
+                                    <tr key={student.id}>
 
-                                        <td>{student.id}</td>
+                                        <td>{student.studentId}</td>
 
-                                        <td>{student.name}</td>
+                                        <td>{student.user?.firstName} {student.user?.lastName}</td>
 
-                                        <td>{student.department}</td>
+                                        <td>{student.department?.name || "—"}</td>
 
                                         <td>{student.semester}</td>
 
-                                        <td>{student.email}</td>
+                                        <td>{student.user?.email}</td>
 
                                         <td>
 
                                             <span
 
-                                                className={
-
-                                                    student.status==="Active"
-
-                                                    ?
-
-                                                    "status active"
-
-                                                    :
-
-                                                    "status inactive"
-
-                                                }
+                                                className="status active"
 
                                             >
 
-                                                {student.status}
+                                                Active
 
                                             </span>
 
@@ -232,6 +180,7 @@ function Students(){
                 </table>
 
             </div>
+            )}
 
         </DashboardLayout>
 

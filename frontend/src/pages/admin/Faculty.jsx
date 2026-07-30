@@ -1,5 +1,7 @@
 import DashboardLayout from "../../components/DashboardLayout";
 import "./Faculty.css";
+import { useEffect, useState } from "react";
+import api from "../../api/axios";
 
 import {
 
@@ -17,73 +19,27 @@ import {
 
 function Faculty(){
 
-    const faculty=[
+    const [faculty, setFaculty] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
 
-        {
+    useEffect(() => {
+        const fetchFaculty = async () => {
+            try {
+                const response = await api.get("/faculty");
+                setFaculty(response.data.data);
+            } catch (err) {
+                console.error(err);
+                setError(
+                    err.response?.data?.message || "Failed to load faculty."
+                );
+            } finally {
+                setLoading(false);
+            }
+        };
 
-            id:"FAC101",
-
-            name:"Dr. S. Mishra",
-
-            department:"Computer Science",
-
-            designation:"Professor",
-
-            email:"smishra@soa.ac.in",
-
-            status:"Active"
-
-        },
-
-        {
-
-            id:"FAC102",
-
-            name:"Dr. A. Panda",
-
-            department:"Electronics",
-
-            designation:"Associate Professor",
-
-            email:"apanda@soa.ac.in",
-
-            status:"Active"
-
-        },
-
-        {
-
-            id:"FAC103",
-
-            name:"Dr. P. Mohanty",
-
-            department:"Mechanical",
-
-            designation:"Assistant Professor",
-
-            email:"pmohanty@soa.ac.in",
-
-            status:"Inactive"
-
-        },
-
-        {
-
-            id:"FAC104",
-
-            name:"Dr. B. Nayak",
-
-            department:"Information Technology",
-
-            designation:"Professor",
-
-            email:"bnayak@soa.ac.in",
-
-            status:"Active"
-
-        }
-
-    ];
+        fetchFaculty();
+    }, []);
 
     return(
 
@@ -121,6 +77,10 @@ function Faculty(){
 
             </div>
 
+            {loading && <p style={{ padding: "16px" }}>Loading faculty...</p>}
+            {error && <p style={{ padding: "16px", color: "#ef4444" }}>{error}</p>}
+
+            {!loading && !error && (
             <div className="faculty-table">
 
                 <table>
@@ -153,41 +113,29 @@ function Faculty(){
 
                             faculty.map(
 
-                                (item,index)=>(
+                                (item)=>(
 
-                                    <tr key={index}>
+                                    <tr key={item.id}>
 
-                                        <td>{item.id}</td>
+                                        <td>{item.employeeId}</td>
 
-                                        <td>{item.name}</td>
+                                        <td>{item.user?.firstName} {item.user?.lastName}</td>
 
-                                        <td>{item.department}</td>
+                                        <td>{item.department?.name || "—"}</td>
 
-                                        <td>{item.designation}</td>
+                                        <td>{item.designation || "—"}</td>
 
-                                        <td>{item.email}</td>
+                                        <td>{item.user?.email}</td>
 
                                         <td>
 
                                             <span
 
-                                                className={
-
-                                                    item.status==="Active"
-
-                                                    ?
-
-                                                    "status active"
-
-                                                    :
-
-                                                    "status inactive"
-
-                                                }
+                                                className="status active"
 
                                             >
 
-                                                {item.status}
+                                                Active
 
                                             </span>
 
@@ -232,6 +180,7 @@ function Faculty(){
                 </table>
 
             </div>
+            )}
 
         </DashboardLayout>
 

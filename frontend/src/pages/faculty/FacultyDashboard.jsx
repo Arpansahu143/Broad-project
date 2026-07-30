@@ -1,15 +1,34 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import './FacultyDashboard.css';
 
 import {
   FaUniversity, FaRegIdCard, FaUserGraduate, FaChalkboardTeacher,
   FaBook, FaUserClock, FaRegClipboard, FaCalendarAlt, FaBell,
   FaCog, FaUsers, FaCheckCircle, FaAngleDown, FaChevronRight,
-  FaRegCalendarAlt, FaPlus, FaClock, FaFileAlt
+  FaRegCalendarAlt, FaPlus, FaClock, FaFileAlt, FaSignOutAlt
 } from 'react-icons/fa';
 import { BiSearch } from 'react-icons/bi';
 
 function FacultyDashboard() {
+  const navigate = useNavigate();
+  const [user, setUser] = useState(null);
+
+  useEffect(() => {
+    const loggedInUser = JSON.parse(localStorage.getItem("user"));
+
+    if (loggedInUser) {
+      setUser(loggedInUser);
+    }
+  }, []);
+
+  const handleLogout = () => {
+    localStorage.removeItem("accessToken");
+    localStorage.removeItem("refreshToken");
+    localStorage.removeItem("user");
+    navigate("/login");
+  };
+
   // Stat cards relevant for Faculty
   const statsData = [
     { label: "Assigned Courses", value: "4", change: "Active", icon: <FaBook />, iconColor: "#6c4cf1", trendColor: "#22c55e" },
@@ -64,12 +83,25 @@ function FacultyDashboard() {
         </nav>
 
         <div className="profile-section">
-          <div className="profile-img-placeholder faculty-avatar">DR</div>
+          <div className="profile-img-placeholder faculty-avatar">
+            {user ? `${user.firstName?.[0] || ""}${user.lastName?.[0] || ""}` : "FA"}
+          </div>
           <div className="profile-info">
-            <span className="name">Dr. Rajesh Sharma</span>
-            <span className="role">Associate Professor</span>
+            <span className="name">
+              {user ? `${user.firstName} ${user.lastName}` : "Loading..."}
+            </span>
+            <span className="role">{user?.role || "Faculty"}</span>
           </div>
           <FaChevronRight className="p-arrow" />
+          <button
+            type="button"
+            className="h-btn"
+            style={{ marginLeft: "8px" }}
+            onClick={handleLogout}
+            title="Logout"
+          >
+            <FaSignOutAlt />
+          </button>
         </div>
       </aside>
 
@@ -92,7 +124,7 @@ function FacultyDashboard() {
 
         <section className="dashboard-hero">
           <h1>Faculty Dashboard</h1>
-          <h2>Welcome back, Dr. Sharma! 👋</h2>
+          <h2>Welcome back, {user?.firstName || "Faculty"}! 👋</h2>
           <p>Here is your schedule and class overview for today.</p>
         </section>
 

@@ -7,13 +7,25 @@ import {
 
 import ApiError from "../../core/errors/ApiError.js";
 import { HTTP_STATUS } from "../../core/constants/httpStatus.js";
+import { ROLES } from "../../core/constants/roles.js";
 
 class AuthService {
   /**
    * Register a new user
+   *
+   * NOTE — SECURITY TRADEOFF, set intentionally at project owner's request:
+   * Public signup now allows self-registration as STUDENT, FACULTY, or
+   * ADMIN. There is no invite code, approval step, or verification of
+   * any kind — anyone who can reach this endpoint can create an ADMIN
+   * account with full control of the system. This was previously locked
+   * to STUDENT-only specifically to prevent that. Revisit before this
+   * app ever touches real data.
    */
   async register(userData) {
     const { firstName, lastName, email, password, role } = userData;
+
+    const requestedRole =
+      role && Object.values(ROLES).includes(role) ? role : ROLES.STUDENT;
 
     // Check if email already exists
     const existingUser = await authRepository.findUserByEmail(email);
@@ -28,13 +40,14 @@ class AuthService {
     // Hash password
     const hashedPassword = await hashPassword(password);
 
-    // Create user
+    // Create user — role now comes from client input, per project owner's
+    // explicit choice (see note above).
     const user = await authRepository.createUser({
       firstName,
       lastName,
       email,
       password: hashedPassword,
-      role,
+      role: requestedRole,
     });
 
     // Generate tokens
@@ -61,6 +74,43 @@ class AuthService {
       },
       accessToken,
       refreshToken,
+    };
+  }
+
+  /**
+   * Create a user with any role — ADMIN only.
+   * Used to create FACULTY/ADMIN accounts, since public /register
+   * is locked to STUDENT. Does not issue tokens: the admin creating
+   * the account is not logging in as that user.
+   */
+  async createUserByAdmin(userData) {
+    const { firstName, lastName, email, password, role } = userData;
+
+    const existingUser = await authRepository.findUserByEmail(email);
+
+    if (existingUser) {
+      throw new ApiError(
+        HTTP_STATUS.CONFLICT,
+        "User already exists with this email."
+      );
+    }
+
+    const hashedPassword = await hashPassword(password);
+
+    const user = await authRepository.createUser({
+      firstName,
+      lastName,
+      email,
+      password: hashedPassword,
+      role,
+    });
+
+    return {
+      id: user.id,
+      firstName: user.firstName,
+      lastName: user.lastName,
+      email: user.email,
+      role: user.role,
     };
   }
 

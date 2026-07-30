@@ -40,6 +40,7 @@ model User {
   // Relations
   refreshTokens RefreshToken[]
   student       Student?
+  faculty       Faculty?
 
   @@index([email])
   @@index([role])
@@ -93,10 +94,33 @@ model Department {
   description String?
 
   students Student[]
+  faculty  Faculty[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   @@index([name])
   @@index([code])
+}
+
+model Faculty {
+
+  id String @id @default(uuid())
+
+  userId String @unique
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  employeeId String @unique
+
+  departmentId String
+  department Department @relation(fields: [departmentId], references: [id])
+
+  designation String?
+  phone String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([employeeId])
+  @@index([departmentId])
 }

@@ -1,12 +1,11 @@
 import { Router } from "express";
 
-import studentController from "./student.controller.js";
-
+import facultyController from "./faculty.controller.js";
 
 import {
-  createStudentValidation,
-  updateStudentValidation,
-} from "./student.validation.js";
+  createFacultyValidation,
+  updateFacultyValidation,
+} from "./faculty.validation.js";
 
 import validateRequest from "../../middlewares/validateRequest.js";
 import authMiddleware from "../../middlewares/auth.middleware.js";
@@ -16,62 +15,62 @@ import { ROLES } from "../../core/constants/roles.js";
 const router = Router();
 
 /* ===========================
-   Student Profile
+   Faculty Profile
 =========================== */
 
-// Logged-in Student Profile
+// Logged-in Faculty Profile
 router.get(
   "/profile",
   authMiddleware,
-  studentController.getProfile
+  facultyController.getProfile
 );
 
 /* ===========================
-   Student CRUD
+   Faculty CRUD
 =========================== */
 
-// Create Student — ADMIN only
+// Create Faculty — ADMIN only
 router.post(
   "/",
   authMiddleware,
   requireRole(ROLES.ADMIN),
-  createStudentValidation,
+  createFacultyValidation,
   validateRequest,
-  studentController.create
+  facultyController.create
 );
 
-// Get All Students — ADMIN or FACULTY
+// Get All Faculty — ADMIN only
 router.get(
   "/",
   authMiddleware,
-  requireRole(ROLES.ADMIN, ROLES.FACULTY),
-  studentController.getAll
+  requireRole(ROLES.ADMIN),
+  facultyController.getAll
 );
 
-// Get Student By ID — ADMIN or FACULTY
+// Get Faculty By ID — ADMIN only
 router.get(
   "/:id",
   authMiddleware,
-  requireRole(ROLES.ADMIN, ROLES.FACULTY),
-  studentController.getById
+  requireRole(ROLES.ADMIN),
+  facultyController.getById
 );
 
-// Update Student — ADMIN only
+// Update Faculty — ADMIN only
 router.put(
   "/:id",
   authMiddleware,
   requireRole(ROLES.ADMIN),
-  updateStudentValidation,
+  updateFacultyValidation,
   validateRequest,
-  studentController.update
+  facultyController.update
 );
 
-// Delete Student — ADMIN only
+// Delete Faculty — ADMIN only
 router.delete(
   "/:id",
   authMiddleware,
   requireRole(ROLES.ADMIN),
-  studentController.delete
+  facultyController.delete
 );
 
 export default router;
