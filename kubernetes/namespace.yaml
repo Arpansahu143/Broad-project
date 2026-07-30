@@ -1,0 +1,43 @@
+# =============================================================================
+# University MIS - Namespace
+# Isolates all MIS resources from other workloads on the cluster.
+# =============================================================================
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: university-mis
+  labels:
+    name: university-mis
+    environment: production
+    managed-by: kubectl
+---
+# Resource quota to prevent the namespace from exhausting cluster capacity
+apiVersion: v1
+kind: ResourceQuota
+metadata:
+  name: university-mis-quota
+  namespace: university-mis
+spec:
+  hard:
+    requests.cpu: "8"
+    requests.memory: 16Gi
+    limits.cpu: "16"
+    limits.memory: 32Gi
+    pods: "50"
+    persistentvolumeclaims: "10"
+---
+# Default limit range applied to any container that omits requests/limits
+apiVersion: v1
+kind: LimitRange
+metadata:
+  name: university-mis-limit-range
+  namespace: university-mis
+spec:
+  limits:
+    - type: Container
+      default:
+        cpu: "500m"
+        memory: "512Mi"
+      defaultRequest:
+        cpu: "100m"
+        memory: "128Mi"

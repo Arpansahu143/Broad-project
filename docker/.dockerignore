@@ -1,0 +1,63 @@
+# =============================================================================
+# University MIS - .dockerignore
+# Keeps build context small and prevents secrets/artifacts from leaking
+# into images. Place a copy of this file at the repository root as well.
+# =============================================================================
+
+# Version control
+.git
+.gitignore
+.github
+
+# Dependencies (installed fresh inside the image)
+**/node_modules
+**/.pnp
+**/.pnp.js
+
+# Build outputs (regenerated during the Docker build)
+**/build
+**/dist
+**/coverage
+
+# Environment & secrets - NEVER bake these into an image
+.env
+.env.*
+!.env.example
+**/*.pem
+**/*.key
+**/secrets/
+
+# Logs
+**/npm-debug.log*
+**/yarn-debug.log*
+**/yarn-error.log*
+**/logs
+**/*.log
+
+# Editor/OS files
+.vscode
+.idea
+.DS_Store
+Thumbs.db
+
+# Testing
+**/coverage
+**/.nyc_output
+
+# Docker/Infra files not needed inside the build context
+docker-compose*.yml
+kubernetes
+terraform
+monitoring
+
+# Documentation
+README.md
+docs/
+*.md
+
+# CI/CD
+.github/workflows
+
+# Misc
+*.tgz
+*.tar.gz

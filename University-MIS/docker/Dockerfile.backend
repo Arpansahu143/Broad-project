@@ -1,0 +1,62 @@
+# =============================================================================
+# University MIS - Backend Dockerfile
+# Node.js + Express API - multi-stage, hardened, non-root, production-ready
+# =============================================================================
+
+# ---------- Stage 1: Install dependencies & build (TypeScript/transpile if any) ----------
+FROM node:20-alpine AS build
+
+LABEL stage="backend-build"
+LABEL maintainer="University MIS DevOps Team"
+
+WORKDIR /app
+
+# System deps required for native modules (bcrypt, pg-native, etc.)
+RUN apk add --no-cache python3 make g++
+
+COPY backend/package.json backend/package-lock.json ./
+RUN npm ci --silent
+
+COPY backend/ ./
+
+# Run build step if the project uses TypeScript/Babel; no-op otherwise
+RUN if [ -f "tsconfig.json" ]; then npm run build; fi
+
+# Prune devDependencies for a lean production node_modules
+RUN npm prune --omit=dev
+
+# ---------- Stage 2: Production runtime ----------
+FROM node:20-alpine AS production
+
+LABEL maintainer="University MIS DevOps Team"
+LABEL description="University MIS - Backend (Node.js + Express API)"
+
+ENV NODE_ENV=production \
+    PORT=5000
+
+WORKDIR /app
+
+# curl + dumb-init: healthchecks and proper signal handling/zombie reaping
+RUN apk add --no-cache curl dumb-init
+
+# Create non-root user
+RUN addgroup -g 1001 -S nodegroup && \
+    adduser -u 1001 -S nodeuser -G nodegroup
+
+# Copy pruned node_modules and app source from the build stage
+COPY --from=build --chown=nodeuser:nodegroup /app/node_modules ./node_modules
+COPY --from=build --chown=nodeuser:nodegroup /app/package.json ./package.json
+COPY --from=build --chown=nodeuser:nodegroup /app/dist ./dist 2>/dev/null || true
+COPY --chown=nodeuser:nodegroup backend/ ./
+
+USER nodeuser
+
+EXPOSE 5000
+
+# Container-level healthcheck hitting the app's /health endpoint
+HEALTHCHECK --interval=30s --timeout=5s --start-period=15s --retries=3 \
+    CMD curl -f http://localhost:5000/health || exit 1
+
+# dumb-init as PID 1 ensures signals (SIGTERM) are forwarded correctly for graceful shutdown
+ENTRYPOINT ["dumb-init", "--"]
+CMD ["node", "src/server.js"]

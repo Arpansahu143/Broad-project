@@ -1,0 +1,182 @@
+# =============================================================================
+# University MIS - Continuous Deployment Pipeline
+# Builds & scans Docker images, pushes to Docker Hub, deploys to Kubernetes
+# (EKS), and notifies the team of the outcome.
+# =============================================================================
+name: CD
+
+on:
+  push:
+    branches: [main]
+  workflow_run:
+    workflows: ["CI"]
+    branches: [main]
+    types: [completed]
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: "Target environment"
+        required: true
+        default: "staging"
+        type: choice
+        options: [staging, production]
+
+env:
+  AWS_REGION: us-east-1
+  EKS_CLUSTER_NAME: university-mis-cluster
+  DOCKERHUB_NAMESPACE: ${{ secrets.DOCKERHUB_USERNAME }}
+
+permissions:
+  contents: read
+  id-token: write   # required for OIDC auth to AWS
+
+jobs:
+  # ---------------------------------------------------------------------
+  # Build & push versioned images to Docker Hub
+  # ---------------------------------------------------------------------
+  build-and-push:
+    name: Build & Push (${{ matrix.service }})
+    if: ${{ github.event.workflow_run.conclusion == 'success' || github.event_name != 'workflow_run' }}
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        service: [frontend, backend]
+    outputs:
+      image-tag: ${{ steps.meta.outputs.tag }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Login to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Compute image metadata
+        id: meta
+        run: echo "tag=${GITHUB_SHA::7}" >> "$GITHUB_OUTPUT"
+
+      - name: Build and push image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: docker/Dockerfile.${{ matrix.service }}
+          push: true
+          tags: |
+            ${{ env.DOCKERHUB_NAMESPACE }}/university-mis-${{ matrix.service }}:${{ steps.meta.outputs.tag }}
+            ${{ env.DOCKERHUB_NAMESPACE }}/university-mis-${{ matrix.service }}:latest
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+          provenance: true
+          sbom: true
+
+  # ---------------------------------------------------------------------
+  # Scan pushed images for vulnerabilities before allowing deployment
+  # ---------------------------------------------------------------------
+  scan-images:
+    name: Scan Image (${{ matrix.service }})
+    needs: build-and-push
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        service: [frontend, backend]
+    steps:
+      - name: Run Trivy vulnerability scanner
+        uses: aquasecurity/trivy-action@0.24.0
+        with:
+          image-ref: ${{ env.DOCKERHUB_NAMESPACE }}/university-mis-${{ matrix.service }}:${{ needs.build-and-push.outputs.image-tag }}
+          format: "sarif"
+          output: "trivy-${{ matrix.service }}.sarif"
+          severity: "CRITICAL,HIGH"
+          exit-code: "1"
+          ignore-unfixed: true
+
+      - name: Upload Trivy results to GitHub Security tab
+        if: always()
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: "trivy-${{ matrix.service }}.sarif"
+
+  # ---------------------------------------------------------------------
+  # Deploy to Kubernetes (EKS) using rolling update strategy
+  # ---------------------------------------------------------------------
+  deploy:
+    name: Deploy to EKS (${{ github.event.inputs.environment || 'staging' }})
+    needs: [build-and-push, scan-images]
+    runs-on: ubuntu-latest
+    environment:
+      name: ${{ github.event.inputs.environment || 'staging' }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Configure AWS credentials (OIDC)
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_DEPLOY_ROLE_ARN }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Update kubeconfig
+        run: aws eks update-kubeconfig --name ${{ env.EKS_CLUSTER_NAME }} --region ${{ env.AWS_REGION }}
+
+      - name: Apply Kubernetes manifests
+        run: |
+          kubectl apply -f kubernetes/namespace.yaml
+          kubectl apply -f kubernetes/configmap.yaml
+          kubectl apply -f kubernetes/secret.yaml
+          kubectl apply -f kubernetes/persistent-volume.yaml
+          kubectl apply -f kubernetes/persistent-volume-claim.yaml
+          kubectl apply -f kubernetes/postgres-deployment.yaml
+          kubectl apply -f kubernetes/redis-deployment.yaml
+          kubectl apply -f kubernetes/backend-deployment.yaml
+          kubectl apply -f kubernetes/frontend-deployment.yaml
+          kubectl apply -f kubernetes/service.yaml
+          kubectl apply -f kubernetes/ingress.yaml
+          kubectl apply -f kubernetes/autoscaler.yaml
+          kubectl apply -f kubernetes/network-policy.yaml
+
+      - name: Set new image tags (rolling update)
+        run: |
+          kubectl -n university-mis set image deployment/backend-deployment \
+            backend=${{ env.DOCKERHUB_NAMESPACE }}/university-mis-backend:${{ needs.build-and-push.outputs.image-tag }}
+          kubectl -n university-mis set image deployment/frontend-deployment \
+            frontend=${{ env.DOCKERHUB_NAMESPACE }}/university-mis-frontend:${{ needs.build-and-push.outputs.image-tag }}
+
+      - name: Wait for rollout to complete
+        run: |
+          kubectl -n university-mis rollout status deployment/backend-deployment --timeout=300s
+          kubectl -n university-mis rollout status deployment/frontend-deployment --timeout=300s
+
+      - name: Verify deployment health
+        run: kubectl -n university-mis get pods -o wide
+
+  # ---------------------------------------------------------------------
+  # Notification: success or failure, sent to Slack
+  # ---------------------------------------------------------------------
+  notify:
+    name: Notify Team
+    needs: [deploy]
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
+      - name: Notify Slack on success
+        if: needs.deploy.result == 'success'
+        uses: slackapi/slack-github-action@v2.0.0
+        with:
+          webhook: ${{ secrets.SLACK_WEBHOOK_URL }}
+          webhook-type: incoming-webhook
+          payload: |
+            {"text": "✅ University MIS deployed successfully — commit ${{ github.sha }} by ${{ github.actor }}"}
+
+      - name: Notify Slack on failure
+        if: needs.deploy.result != 'success'
+        uses: slackapi/slack-github-action@v2.0.0
+        with:
+          webhook: ${{ secrets.SLACK_WEBHOOK_URL }}
+          webhook-type: incoming-webhook
+          payload: |
+            {"text": "❌ University MIS deployment FAILED — commit ${{ github.sha }} by ${{ github.actor }}. Check the Actions run for details."}

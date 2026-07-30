@@ -1,0 +1,29 @@
+# =============================================================================
+# University MIS - Kibana Configuration
+# Web UI for exploring logs indexed by Logstash into Elasticsearch.
+# =============================================================================
+
+server.name: university-mis-kibana
+server.host: "0.0.0.0"
+server.port: 5601
+server.basePath: "/kibana"
+server.publicBaseUrl: "https://logs.mis.university.edu/kibana"
+
+elasticsearch.hosts: ["https://elasticsearch.monitoring.svc.cluster.local:9200"]
+elasticsearch.username: "${KIBANA_SYSTEM_USERNAME}"
+elasticsearch.password: "${KIBANA_SYSTEM_PASSWORD}"
+elasticsearch.ssl.certificateAuthorities: ["/etc/kibana/certs/ca.crt"]
+elasticsearch.ssl.verificationMode: certificate
+
+# Encrypt saved objects (dashboards, visualizations) at rest
+xpack.encryptedSavedObjects.encryptionKey: "${KIBANA_ENCRYPTION_KEY}"
+
+# Restrict Kibana to only the university-mis log indices by default
+kibana.defaultAppId: "discover"
+
+server.ssl.enabled: true
+server.ssl.certificate: /etc/kibana/certs/kibana.crt
+server.ssl.key: /etc/kibana/certs/kibana.key
+
+logging.appenders.default.type: console
+logging.root.level: info

@@ -1,0 +1,60 @@
+# =============================================================================
+# University MIS - Alertmanager Configuration
+# Routes Prometheus alerts to Slack (default) and email (critical only),
+# with sensible grouping and inhibition rules to reduce alert fatigue.
+# =============================================================================
+
+global:
+  resolve_timeout: 5m
+  slack_api_url: "${SLACK_WEBHOOK_URL}"   # injected via secret/env at deploy time
+
+route:
+  receiver: "slack-default"
+  group_by: ["alertname", "namespace"]
+  group_wait: 30s
+  group_interval: 5m
+  repeat_interval: 4h
+
+  routes:
+    - match:
+        severity: critical
+      receiver: "critical-alerts"
+      continue: true
+      group_wait: 10s
+      repeat_interval: 1h
+
+    - match:
+        severity: warning
+      receiver: "slack-default"
+
+inhibit_rules:
+  # Suppress warning-level alerts for a component that already has a
+  # critical alert firing (e.g. don't page about high latency if the
+  # service is already down)
+  - source_match:
+      severity: "critical"
+    target_match:
+      severity: "warning"
+    equal: ["alertname", "namespace", "pod"]
+
+receivers:
+  - name: "slack-default"
+    slack_configs:
+      - channel: "#university-mis-alerts"
+        send_resolved: true
+        title: "{{ .CommonAnnotations.summary }}"
+        text: "{{ .CommonAnnotations.description }}"
+
+  - name: "critical-alerts"
+    slack_configs:
+      - channel: "#university-mis-incidents"
+        send_resolved: true
+        title: "🚨 CRITICAL: {{ .CommonAnnotations.summary }}"
+        text: "{{ .CommonAnnotations.description }}"
+    email_configs:
+      - to: "devops-oncall@university.edu"
+        from: "alertmanager@university.edu"
+        smarthost: "smtp.university.edu:587"
+        auth_username: "alertmanager@university.edu"
+        auth_password: "${SMTP_PASSWORD}"
+        send_resolved: true

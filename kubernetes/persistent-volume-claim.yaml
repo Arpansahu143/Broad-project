@@ -1,0 +1,39 @@
+# =============================================================================
+# University MIS - PersistentVolumeClaims
+# Note: postgres and redis already define volumeClaimTemplates inline in
+# their StatefulSets (see postgres-deployment.yaml / redis-deployment.yaml),
+# which is the recommended pattern. This file provides a standalone PVC for
+# shared application file storage (e.g. temporary uploads before S3 transfer,
+# generated reports/exports) mounted by the backend.
+# =============================================================================
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: backend-shared-storage-pvc
+  namespace: university-mis
+  labels:
+    app: university-mis
+    component: backend
+spec:
+  accessModes:
+    - ReadWriteMany
+  storageClassName: efs-sc   # EFS CSI driver recommended for ReadWriteMany on EKS
+  resources:
+    requests:
+      storage: 10Gi
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: postgres-backup-pvc
+  namespace: university-mis
+  labels:
+    app: university-mis
+    component: postgres-backup
+spec:
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: gp3
+  resources:
+    requests:
+      storage: 30Gi

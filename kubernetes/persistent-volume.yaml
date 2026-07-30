@@ -1,0 +1,41 @@
+# =============================================================================
+# University MIS - PersistentVolumes
+# On EKS, dynamic provisioning via the gp3 StorageClass (below) is preferred
+# over static PVs. This StorageClass is what the StatefulSet volumeClaimTemplates
+# (postgres, redis) reference. Static PV examples are included for on-prem /
+# non-dynamic-provisioning environments.
+# =============================================================================
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: gp3
+  annotations:
+    storageclass.kubernetes.io/is-default-class: "true"
+provisioner: ebs.csi.aws.com
+parameters:
+  type: gp3
+  encrypted: "true"
+  fsType: ext4
+reclaimPolicy: Retain
+volumeBindingMode: WaitForFirstConsumer
+allowVolumeExpansion: true
+---
+# Static PV example (only needed if NOT using dynamic provisioning above)
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: postgres-pv-static
+  labels:
+    type: postgres
+spec:
+  capacity:
+    storage: 20Gi
+  volumeMode: Filesystem
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: gp3
+  csi:
+    driver: ebs.csi.aws.com
+    volumeHandle: REPLACE_WITH_EBS_VOLUME_ID   # e.g. vol-0123456789abcdef0
+    fsType: ext4

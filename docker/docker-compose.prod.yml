@@ -1,0 +1,122 @@
+# =============================================================================
+# University MIS - Docker Compose (Production Overlay)
+# =============================================================================
+# Usage:
+#   docker compose -f docker/docker-compose.yml -f docker/docker-compose.prod.yml up -d
+#
+# This overlay hardens the base compose file for a single-host production
+# deployment (e.g. a bastion/staging box). For real production at scale,
+# use the Kubernetes manifests in /kubernetes instead.
+# =============================================================================
+
+version: "3.9"
+
+services:
+
+  frontend:
+    image: ${DOCKERHUB_USERNAME}/university-mis-frontend:${IMAGE_TAG:-latest}
+    build: null
+    restart: always
+    deploy:
+      replicas: 2
+      resources:
+        limits:
+          cpus: "0.50"
+          memory: 256M
+        reservations:
+          cpus: "0.25"
+          memory: 128M
+      restart_policy:
+        condition: on-failure
+        max_attempts: 3
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+    read_only: true
+    tmpfs:
+      - /var/cache/nginx
+      - /var/run
+    security_opt:
+      - no-new-privileges:true
+
+  backend:
+    image: ${DOCKERHUB_USERNAME}/university-mis-backend:${IMAGE_TAG:-latest}
+    build: null
+    restart: always
+    environment:
+      NODE_ENV: production
+    deploy:
+      replicas: 3
+      resources:
+        limits:
+          cpus: "1.00"
+          memory: 512M
+        reservations:
+          cpus: "0.50"
+          memory: 256M
+      restart_policy:
+        condition: on-failure
+        max_attempts: 3
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+    security_opt:
+      - no-new-privileges:true
+
+  postgres:
+    restart: always
+    deploy:
+      resources:
+        limits:
+          cpus: "2.00"
+          memory: 2G
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+      - ../scripts/backup:/backups
+    security_opt:
+      - no-new-privileges:true
+
+  redis:
+    restart: always
+    deploy:
+      resources:
+        limits:
+          cpus: "0.50"
+          memory: 512M
+    security_opt:
+      - no-new-privileges:true
+
+  # ---------------------------------------------------------------------
+  # Optional: reverse proxy / TLS terminator in front of the frontend
+  # for single-host production deployments without a cloud load balancer.
+  # ---------------------------------------------------------------------
+  traefik:
+    image: traefik:v3.0
+    container_name: mis-traefik
+    restart: always
+    command:
+      - "--providers.docker=true"
+      - "--providers.docker.exposedbydefault=false"
+      - "--entrypoints.web.address=:80"
+      - "--entrypoints.websecure.address=:443"
+      - "--certificatesresolvers.le.acme.httpchallenge=true"
+      - "--certificatesresolvers.le.acme.httpchallenge.entrypoint=web"
+      - "--certificatesresolvers.le.acme.email=${ACME_EMAIL}"
+      - "--certificatesresolvers.le.acme.storage=/letsencrypt/acme.json"
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - traefik-certs:/letsencrypt
+    networks:
+      - mis-frontend-net
+
+volumes:
+  postgres-data:
+  redis-data:
+  traefik-certs:
