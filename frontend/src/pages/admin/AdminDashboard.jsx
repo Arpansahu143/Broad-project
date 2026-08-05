@@ -1,5 +1,6 @@
 import React from 'react';
 import './AdminDashboard.css';
+import Sidebar from "../../components/Sidebar";
 // Make sure to install: charts.css
 import 'charts.css';
 
@@ -62,34 +63,7 @@ function AdminDashboard() {
   return (
     <div className="admin-layout">
       {/* ===================== SIDEBAR ===================== */}
-      <aside className="sidebar">
-        <div className="logo-section">
-          <FaUniversity className="uni-logo-icon" />
-          <div className="logo-text">
-            <h1>University MIS</h1>
-            <p>Management Information System</p>
-          </div>
-        </div>
-
-        <nav className="side-menu">
-          {menuItems.map((item, idx) => (
-            <a key={idx} href="#" className={item.active ? "menu-item active" : "menu-item"}>
-              {item.icon}
-              <span>{item.label}</span>
-            </a>
-          ))}
-        </nav>
-
-        <div className="profile-section">
-          <div className="profile-img-placeholder">AS</div>
-          <div className="profile-info">
-            <span className="name">Arpan Sahu</span>
-            <span className="role">Administrator</span>
-          </div>
-          <FaChevronRight className="p-arrow" />
-        </div>
-      </aside>
-
+      <Sidebar role="admin" />
       {/* ===================== MAIN CONTENT ===================== */}
       <main className="main-content">
         <header className="main-header">

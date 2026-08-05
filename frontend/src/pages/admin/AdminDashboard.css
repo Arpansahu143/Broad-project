@@ -1,4 +1,4 @@
-@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap");
+/* @import url("https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"); */
 
 * {
   margin: 0;
@@ -18,25 +18,8 @@ body {
   width: 100%;
 }
 
-/* ===================== SIDEBAR ===================== */
-.sidebar {
-  width: 260px;
-  background: #111a45;
-  color: #fff;
-  display: flex;
-  flex-direction: column;
-  padding: 24px;
-  position: sticky;
-  top: 0;
-  height: 100vh;
-}
 
-.logo-section {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  margin-bottom: 40px;
-}
+
 
 .uni-logo-icon {
   font-size: 32px;
@@ -60,25 +43,6 @@ body {
   margin-top: 1px;
 }
 
-.side-menu {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-
-.menu-item {
-  display: flex;
-  align-items: center;
-  gap: 14px;
-  padding: 12px 18px;
-  color: #a3adcc;
-  text-decoration: none;
-  font-size: 14px;
-  font-weight: 500;
-  border-radius: 12px;
-  transition: all 0.2s ease;
-}
 
 .menu-item svg {
   font-size: 16px;
@@ -101,15 +65,6 @@ body {
   color: #34d399;
 }
 
-.profile-section {
-  background: #1e295a;
-  border-radius: 16px;
-  padding: 16px;
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  margin-top: auto;
-}
 
 .profile-img-placeholder {
   width: 44px;
@@ -145,19 +100,6 @@ body {
   font-size: 12px;
 }
 
-/* ===================== MAIN CONTENT ===================== */
-.main-content {
-  flex: 1;
-  background: #f9fbfd;
-  padding: 24px 32px;
-}
-
-.main-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 28px;
-}
 
 .search-bar {
   background: #e8ecf4;
@@ -641,4 +583,8 @@ body {
   font-size: 12px;
   color: #8c95ad;
   text-align: center;
+}
+.main-content{
+    margin-left:280px;
+    width:calc(100% - 280px);
 }

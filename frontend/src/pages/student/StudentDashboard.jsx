@@ -1,212 +1,295 @@
-import React, { useEffect, useState } from "react";
-import './StudentDashboard.css';
-import { NavLink } from "react-router-dom";
+import { useEffect, useState } from "react";
+import DashboardLayout from "../../components/DashboardLayout";
+import "./StudentDashboard.css";
 
 import {
-  FaUniversity, FaRegIdCard, FaUserGraduate, FaBook,
-  FaUserClock, FaRegClipboard, FaBell, FaCog, FaChevronRight,
-  FaRegCalendarAlt, FaAngleDown, FaClock, FaExclamationTriangle,
-  FaCheckCircle, FaGraduationCap
-} from 'react-icons/fa';
-import { BiSearch } from 'react-icons/bi';
+    FaGraduationCap,
+    FaUserClock,
+    FaBook,
+    FaRegClipboard,
+    FaClock
+} from "react-icons/fa";
 
 function StudentDashboard() {
-  const [user, setUser] = useState(null);
 
-useEffect(() => {
-  const loggedInUser = JSON.parse(localStorage.getItem("user"));
+    const [user, setUser] = useState(null);
 
-  if (loggedInUser) {
-    setUser(loggedInUser);
-  }
-}, []);
-  // Stat cards for Student View
-  const statsData = [
-    { label: "Overall GPA", value: "3.84", change: "+0.12", icon: <FaGraduationCap />, iconColor: "#6c4cf1", trendColor: "#22c55e" },
-    { label: "Attendance", value: "92.5%", change: "+1.5%", icon: <FaUserClock />, iconColor: "#34d399", trendColor: "#22c55e" },
-    { label: "Enrolled Courses", value: "6", change: "Active", icon: <FaBook />, iconColor: "#0ea5e9", trendColor: "#22c55e" },
-    { label: "Pending Tasks", value: "3", change: "Due Soon", icon: <FaRegClipboard />, iconColor: "#ef4444", trendColor: "#ef4444" },
-  ];
+    useEffect(() => {
 
-  // Student Sidebar Menu
-  const menuItems = [
-  {
-    label: "Dashboard",
-    icon: <FaRegIdCard />,
-    path: "/student/dashboard",
-  },
-  {
-    label: "Attendance",
-    icon: <FaUserClock />,
-    path: "/student/attendance",
-  },
-  {
-    label: "Courses",
-    icon: <FaBook />,
-    path: "/student/courses",
-  },
-  {
-    label: "Notifications",
-    icon: <FaBell />,
-    path: "/student/notifications",
-  },
-  {
-    label: "Profile",
-    icon: <FaUserGraduate />,
-    path: "/student/profile",
-  }
-];
+        const loggedInUser = JSON.parse(localStorage.getItem("user"));
 
-  // Enrolled Courses with Attendance Progress
-  const courseProgress = [
-    { code: "CS-301", name: "Data Structures & Algorithms", instructor: "Dr. Rajesh Sharma", attendance: "95%", color: "#6c4cf1" },
-    { code: "CS-302", name: "Database Management Systems", instructor: "Prof. Ananya Roy", attendance: "88%", color: "#0ea5e9" },
-    { code: "CS-303", name: "Computer Networks", instructor: "Dr. Vikram Singh", attendance: "92%", color: "#34d399" },
-    { code: "CS-304", name: "Software Engineering", instructor: "Prof. Priya Nair", attendance: "85%", color: "#a855f7" },
-  ];
+        if (loggedInUser) {
+            setUser(loggedInUser);
+        }
 
-  // Upcoming Assignments & Quizzes
-  const upcomingAssignments = [
-    { title: "Binary Trees Assignment", course: "CS-301", dueDate: "Tomorrow, 11:59 PM", status: "Urgent" },
-    { title: "SQL Queries Lab Report", course: "CS-302", dueDate: "29 July 2026", status: "Pending" },
-    { title: "Networking Quiz 2", course: "CS-303", dueDate: "02 August 2026", status: "Upcoming" },
-  ];
+    }, []);
 
-  return (
-    <div className="admin-layout">
-      {/* ===================== SIDEBAR ===================== */}
-      <aside className="sidebar">
-        <div className="logo-section">
-          <FaUniversity className="uni-logo-icon" />
-          <div className="logo-text">
-            <h1>University MIS</h1>
-            <p>Student Portal</p>
-          </div>
-        </div>
+    const stats = [
 
-        <nav className="side-menu">
-  {menuItems.map((item, idx) => (
-    <NavLink
-      key={idx}
-      to={item.path}
-      className={({ isActive }) =>
-        isActive ? "menu-item active" : "menu-item"
-      }
-    >
-      {item.icon}
-      <span>{item.label}</span>
-    </NavLink>
-  ))}
-</nav>
+        {
+            title: "Overall GPA",
+            value: "3.84",
+            change: "+0.12",
+            color: "#6c4cf1",
+            icon: <FaGraduationCap />
+        },
 
-        <div className="profile-section">
-          <div className="profile-img-placeholder student-avatar">RK</div>
-          <div className="profile-info">
-            <span className="name">
-  {user ? `${user.firstName} ${user.lastName}` : "Loading..."}
-</span>
-            <span className="role">
-  {user?.role || "STUDENT"}
-</span>
-          </div>
-          <FaChevronRight className="p-arrow" />
-        </div>
-      </aside>
+        {
+            title: "Attendance",
+            value: "92.5%",
+            change: "+1.5%",
+            color: "#10b981",
+            icon: <FaUserClock />
+        },
 
-      {/* ===================== MAIN CONTENT ===================== */}
-      <main className="main-content">
-        <header className="main-header">
-          <div className="search-bar">
-            <BiSearch className="search-icon" />
-            <input type="search" placeholder="Search courses, assignments..." />
-          </div>
-          <div className="header-actions">
-            <button className="h-btn"><FaBell /></button>
-            <button className="h-btn date-selector">
-              <FaRegCalendarAlt />
-              <span>26 July 2026</span>
-              <FaAngleDown />
-            </button>
-          </div>
-        </header>
+        {
+            title: "Courses",
+            value: "6",
+            change: "Active",
+            color: "#0ea5e9",
+            icon: <FaBook />
+        },
 
-        <section className="dashboard-hero">
-          <h1>Student Dashboard</h1>
-          <h2>
-  Welcome back, {user?.firstName || "Student"}! 👋
-</h2>
-          <p>Here is your current academic performance and schedule overview.</p>
-        </section>
+        {
+            title: "Pending Tasks",
+            value: "3",
+            change: "Due Soon",
+            color: "#ef4444",
+            icon: <FaRegClipboard />
+        }
 
-        {/* ===================== STAT CARDS ===================== */}
-        <section className="stats-grid">
-          {statsData.map((stat, idx) => (
-            <div key={idx} className="stat-card">
-              <div className="stat-header">
-                <div className="stat-icon" style={{ color: stat.iconColor, background: `${stat.iconColor}15` }}>
-                  {stat.icon}
+    ];
+
+    const courses = [
+
+        {
+            code: "CSE301",
+            name: "Database Management System",
+            attendance: "93%",
+            color: "#6c4cf1"
+        },
+
+        {
+            code: "CSE302",
+            name: "Operating System",
+            attendance: "89%",
+            color: "#10b981"
+        },
+
+        {
+            code: "CSE303",
+            name: "Computer Networks",
+            attendance: "84%",
+            color: "#0ea5e9"
+        },
+
+        {
+            code: "CSE304",
+            name: "Software Engineering",
+            attendance: "98%",
+            color: "#f59e0b"
+        }
+
+    ];
+
+    const tasks = [
+
+        {
+            course: "CSE301",
+            title: "Binary Trees Assignment",
+            due: "Tomorrow 11:59 PM",
+            status: "Urgent"
+        },
+
+        {
+            course: "CSE302",
+            title: "SQL Lab Report",
+            due: "29 July 2026",
+            status: "Pending"
+        },
+
+        {
+            course: "CSE303",
+            title: "Networking Quiz",
+            due: "02 August 2026",
+            status: "Upcoming"
+        }
+
+    ];
+      return (
+
+        <DashboardLayout
+            role="student"
+            title="Student Dashboard"
+        >
+
+            <section className="dashboard-hero">
+
+                <h2>
+                    Welcome back, {user?.firstName || "Student"} 👋
+                </h2>
+
+                <p>
+                    Here is your current academic performance and today's overview.
+                </p>
+
+            </section>
+
+            <section className="stats-grid">
+
+                {
+                    stats.map((item,index)=>(
+
+                        <div className="stat-card" key={index}>
+
+                            <div
+                                className="stat-icon"
+                                style={{
+                                    background:`${item.color}15`,
+                                    color:item.color
+                                }}
+                            >
+                                {item.icon}
+                            </div>
+
+                            <h4>{item.title}</h4>
+
+                            <h2>{item.value}</h2>
+
+                            <span
+                                style={{
+                                    color:item.color
+                                }}
+                            >
+                                {item.change}
+                            </span>
+
+                        </div>
+
+                    ))
+                }
+
+            </section>
+
+            <div className="analytics-section">
+
+                <div className="panel">
+
+                    <div className="panel-header">
+
+                        <h3>Enrolled Courses</h3>
+
+                    </div>
+
+                    {
+
+                        courses.map((course,index)=>(
+
+                            <div
+                                className="course-card"
+                                key={index}
+                            >
+
+                                <div className="course-details">
+
+                                    <h4>
+
+                                        {course.code}
+
+                                    </h4>
+
+                                    <p>
+
+                                        {course.name}
+
+                                    </p>
+
+                                </div>
+
+                                <div
+                                    className="attendance-tag"
+                                    style={{
+                                        color:course.color
+                                    }}
+                                >
+
+                                    {course.attendance}
+
+                                </div>
+
+                            </div>
+
+                        ))
+
+                    }
+
                 </div>
-                <div className="stat-label">{stat.label}</div>
-              </div>
-              <div className="stat-main">
-                <div className="stat-value">{stat.value}</div>
-                <div className="stat-change" style={{ color: stat.trendColor }}>
-                  {stat.change}
-                </div>
-              </div>
-            </div>
-          ))}
-        </section>
 
-        {/* ===================== COURSES & ASSIGNMENTS ===================== */}
-        <div className="analytics-section">
-          {/* Enrolled Courses Progress */}
-          <div className="panel">
-            <div className="panel-header">
-              <h3>Enrolled Courses & Attendance</h3>
-              <a href="#" className="view-all">View All Courses</a>
-            </div>
-            <div className="dept-list">
-              {courseProgress.map((course, idx) => (
-                <div key={idx} className="dept-item">
-                  <div className="dept-info">
-                    <span className="dept-name"><strong>{course.code}</strong>: {course.name}</span>
-                    <span className="dept-counts">{course.attendance} Attendance</span>
-                  </div>
-                  <div className="progress-bar-bg">
-                    <div className="progress-bar" style={{ width: course.attendance, background: course.color }}></div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
+                <div className="panel">
 
-          {/* Pending Submissions / Deadlines */}
-          <div className="dept-panel">
-            <div className="panel-header">
-              <h3>Upcoming Assignments</h3>
-            </div>
-            <div className="student-task-list">
-              {upcomingAssignments.map((task, idx) => (
-                <div key={idx} className="task-card">
-                  <div className="task-header-row">
-                    <span className="task-course">{task.course}</span>
-                    <span className={`task-badge ${task.status.toLowerCase()}`}>{task.status}</span>
-                  </div>
-                  <span className="task-title">{task.title}</span>
-                  <span className="task-due"><FaClock /> {task.dueDate}</span>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
+                    <div className="panel-header">
 
-        <footer className="admin-footer">
-          © 2026 University MIS. All rights reserved.
-        </footer>
-      </main>
-    </div>
-  );
+                        <h3>
+
+                            Upcoming Tasks
+
+                        </h3>
+
+                    </div>
+
+                    {
+
+                        tasks.map((task,index)=>(
+
+                            <div
+                                className="task-card"
+                                key={index}
+                            >
+
+                                <div className="task-top">
+
+                                    <span className="course-code">
+
+                                        {task.course}
+
+                                    </span>
+
+                                    <span className={task.status.toLowerCase()}>
+
+                                        {task.status}
+
+                                    </span>
+
+                                </div>
+
+                                <h4>
+
+                                    {task.title}
+
+                                </h4>
+
+                                <p>
+
+                                    <FaClock />
+
+                                    {task.due}
+
+                                </p>
+
+                            </div>
+
+                        ))
+
+                    }
+
+                </div>
+
+            </div>
+
+        </DashboardLayout>
+
+    );
+
 }
 
 export default StudentDashboard;

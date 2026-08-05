@@ -1,29 +1,15 @@
 .sidebar{
-
-    width:270px;
-
-    min-height:100vh;
-
-    background:#171c33;
-
-    color:white;
-
-    display:flex;
-
-    flex-direction:column;
-
-    justify-content:space-between;
-
-    position:fixed;
-
-    left:0;
-
-    top:0;
-
-    overflow-y:auto;
-
-    box-shadow:5px 0 20px rgba(0,0,0,.15);
-
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: 270px;
+    height: 100vh;
+    background: #171c33;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    z-index: 1000;
 }
 
 

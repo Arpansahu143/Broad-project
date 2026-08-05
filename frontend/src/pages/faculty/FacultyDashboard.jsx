@@ -1,5 +1,6 @@
 import React from 'react';
 import './FacultyDashboard.css';
+import DashboardLayout from "../../components/DashboardLayout";
 
 import {
   FaUniversity, FaRegIdCard, FaUserGraduate, FaChalkboardTeacher,
@@ -42,133 +43,91 @@ function FacultyDashboard() {
     { title: "Lab Assignment #4", course: "CS-405", count: 6, deadline: "Tomorrow" },
   ];
 
-  return (
-    <div className="admin-layout">
-      {/* ===================== SIDEBAR ===================== */}
-      <aside className="sidebar">
-        <div className="logo-section">
-          <FaUniversity className="uni-logo-icon" />
-          <div className="logo-text">
-            <h1>University MIS</h1>
-            <p>Faculty Portal</p>
+ return (
+  <DashboardLayout
+    role="faculty"
+    title="Faculty Dashboard"
+  >
+    {/* Stats */}
+    <div className="faculty-stats">
+      {statsData.map((item, index) => (
+        <div className="stat-card" key={index}>
+          <div
+            className="stat-icon"
+            style={{
+              color: item.iconColor,
+              background: `${item.iconColor}20`,
+            }}
+          >
+            {item.icon}
+          </div>
+
+          <div className="stat-info">
+            <h4>{item.label}</h4>
+            <h2>{item.value}</h2>
+            <span style={{ color: item.trendColor }}>
+              {item.change}
+            </span>
           </div>
         </div>
-
-        <nav className="side-menu">
-          {menuItems.map((item, idx) => (
-            <a key={idx} href="#" className={item.active ? "menu-item active" : "menu-item"}>
-              {item.icon}
-              <span>{item.label}</span>
-            </a>
-          ))}
-        </nav>
-
-        <div className="profile-section">
-          <div className="profile-img-placeholder faculty-avatar">DR</div>
-          <div className="profile-info">
-            <span className="name">Dr. Rajesh Sharma</span>
-            <span className="role">Associate Professor</span>
-          </div>
-          <FaChevronRight className="p-arrow" />
-        </div>
-      </aside>
-
-      {/* ===================== MAIN CONTENT ===================== */}
-      <main className="main-content">
-        <header className="main-header">
-          <div className="search-bar">
-            <BiSearch className="search-icon" />
-            <input type="search" placeholder="Search courses, students..." />
-          </div>
-          <div className="header-actions">
-            <button className="h-btn"><FaBell /></button>
-            <button className="h-btn date-selector">
-              <FaRegCalendarAlt />
-              <span>26 July 2026</span>
-              <FaAngleDown />
-            </button>
-          </div>
-        </header>
-
-        <section className="dashboard-hero">
-          <h1>Faculty Dashboard</h1>
-          <h2>Welcome back, Dr. Sharma! 👋</h2>
-          <p>Here is your schedule and class overview for today.</p>
-        </section>
-
-        {/* ===================== STAT CARDS ===================== */}
-        <section className="stats-grid">
-          {statsData.map((stat, idx) => (
-            <div key={idx} className="stat-card">
-              <div className="stat-header">
-                <div className="stat-icon" style={{ color: stat.iconColor, background: `${stat.iconColor}15` }}>
-                  {stat.icon}
-                </div>
-                <div className="stat-label">{stat.label}</div>
-              </div>
-              <div className="stat-main">
-                <div className="stat-value">{stat.value}</div>
-                <div className="stat-change" style={{ color: stat.trendColor }}>
-                  {stat.change}
-                </div>
-              </div>
-            </div>
-          ))}
-        </section>
-
-        {/* ===================== SCHEDULE & QUICK ACTION ===================== */}
-        <div className="analytics-section">
-          {/* Today's Schedule Panel */}
-          <div className="panel">
-            <div className="panel-header">
-              <h3>Today's Lecture Schedule</h3>
-              <a href="#" className="view-all">Full Timetable</a>
-            </div>
-            <div className="schedule-list">
-              {classSchedule.map((cls, idx) => (
-                <div key={idx} className="schedule-card">
-                  <div className="class-badge">{cls.code}</div>
-                  <div className="class-info">
-                    <span className="class-title">{cls.name}</span>
-                    <span className="class-meta"><FaClock /> {cls.time} • <strong>{cls.room}</strong></span>
-                  </div>
-                  <button className="mark-attendance-btn">
-                    <FaCheckCircle /> Mark Attendance
-                  </button>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          {/* Pending Tasks / Grading Panel */}
-          <div className="dept-panel">
-            <div className="panel-header">
-              <h3>Pending Evaluations</h3>
-            </div>
-            <div className="grading-list">
-              {pendingGrading.map((item, idx) => (
-                <div key={idx} className="grading-item">
-                  <div className="grading-icon"><FaFileAlt /></div>
-                  <div className="grading-info">
-                    <span className="g-title">{item.title}</span>
-                    <span className="g-meta">{item.course} • <strong>{item.count} submissions</strong></span>
-                  </div>
-                  <span className="due-tag">{item.deadline}</span>
-                </div>
-              ))}
-            </div>
-            <button className="upload-marks-btn">
-              <FaPlus /> Upload New Assessment
-            </button>
-          </div>
-        </div>
-
-        <footer className="admin-footer">
-          © 2026 University MIS. All rights reserved.
-        </footer>
-      </main>
+      ))}
     </div>
-  );
+
+    <div className="faculty-grid">
+
+      {/* Today's Classes */}
+      <div className="faculty-card">
+        <div className="card-header">
+          <h3>Today's Classes</h3>
+        </div>
+
+        {classSchedule.map((cls, index) => (
+          <div className="class-item" key={index}>
+            <div>
+              <h4>{cls.name}</h4>
+              <p>{cls.code}</p>
+              <small>
+                {cls.time} • {cls.room}
+              </small>
+            </div>
+
+            <button className="primary-btn">
+              Mark Attendance
+            </button>
+          </div>
+        ))}
+      </div>
+
+      {/* Pending Evaluations */}
+
+      <div className="faculty-card">
+        <div className="card-header">
+          <h3>Pending Evaluations</h3>
+        </div>
+
+        {pendingGrading.map((item, index) => (
+          <div className="evaluation-item" key={index}>
+            <div>
+              <h4>{item.title}</h4>
+              <p>
+                {item.course} • {item.count} submissions
+              </p>
+            </div>
+
+            <span className="deadline">
+              {item.deadline}
+            </span>
+          </div>
+        ))}
+
+        <button className="upload-btn">
+          Upload New Assessment
+        </button>
+      </div>
+
+    </div>
+  </DashboardLayout>
+);
 }
 
 export default FacultyDashboard;
