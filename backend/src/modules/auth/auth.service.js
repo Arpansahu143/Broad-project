@@ -185,6 +185,39 @@ class AuthService {
       message: "Logged out from all devices.",
     };
   }
+
+  /**
+   * Change the logged-in user's password.
+   * Requires the current password to be re-confirmed. On success,
+   * revokes every other active session — anyone with an old refresh
+   * token (including a device that had the password stolen) is
+   * logged out everywhere, matching standard security practice.
+   */
+  async changePassword(userId, currentPassword, newPassword) {
+    const user = await authRepository.findUserById(userId);
+
+    if (!user) {
+      throw new ApiError(HTTP_STATUS.NOT_FOUND, "User not found");
+    }
+
+    const isMatch = await comparePassword(currentPassword, user.password);
+
+    if (!isMatch) {
+      throw new ApiError(
+        HTTP_STATUS.UNAUTHORIZED,
+        "Current password is incorrect"
+      );
+    }
+
+    const hashedPassword = await hashPassword(newPassword);
+
+    await authRepository.updatePassword(userId, hashedPassword);
+    await authRepository.revokeAllUserTokens(userId);
+
+    return {
+      message: "Password changed successfully. Please log in again.",
+    };
+  }
 }
 
 export default new AuthService();

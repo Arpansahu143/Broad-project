@@ -18,6 +18,7 @@ import FacultyDashboard from "./pages/faculty/FacultyDashboard";
 import Students from "./pages/faculty/Students";
 import FacultyCourses from "./pages/faculty/Courses";
 import FacultyAttendance from "./pages/faculty/Attendance";
+import FacultyNotifications from "./pages/faculty/Notifications";
 
 // ================= ADMIN =================
 import AdminDashboard from "./pages/admin/AdminDashboard";
@@ -25,6 +26,7 @@ import AdminStudents from "./pages/admin/Students";
 import Faculty from "./pages/admin/Faculty";
 import AdminCourses from "./pages/admin/Courses";
 import Reports from "./pages/admin/Reports";
+import AdminNotifications from "./pages/admin/Notifications";
 
 function App() {
   return (
@@ -47,6 +49,7 @@ function App() {
         <Route path="/faculty/students" element={<ProtectedRoute allowedRoles={["FACULTY"]}><Students /></ProtectedRoute>} />
         <Route path="/faculty/courses" element={<ProtectedRoute allowedRoles={["FACULTY"]}><FacultyCourses /></ProtectedRoute>} />
         <Route path="/faculty/attendance" element={<ProtectedRoute allowedRoles={["FACULTY"]}><FacultyAttendance /></ProtectedRoute>} />
+        <Route path="/faculty/notifications" element={<ProtectedRoute allowedRoles={["FACULTY"]}><FacultyNotifications /></ProtectedRoute>} />
 
         {/* ================= ADMIN ================= */}
         <Route path="/admin/dashboard" element={<ProtectedRoute allowedRoles={["ADMIN"]}><AdminDashboard /></ProtectedRoute>} />
@@ -54,6 +57,7 @@ function App() {
         <Route path="/admin/faculty" element={<ProtectedRoute allowedRoles={["ADMIN"]}><Faculty /></ProtectedRoute>} />
         <Route path="/admin/courses" element={<ProtectedRoute allowedRoles={["ADMIN"]}><AdminCourses /></ProtectedRoute>} />
         <Route path="/admin/reports" element={<ProtectedRoute allowedRoles={["ADMIN"]}><Reports /></ProtectedRoute>} />
+        <Route path="/admin/notifications" element={<ProtectedRoute allowedRoles={["ADMIN"]}><AdminNotifications /></ProtectedRoute>} />
 
         {/* ================= FALLBACK ROUTE ================= */}
         {/* Redirects any unknown/invalid URLs back to Login */}

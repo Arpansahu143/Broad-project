@@ -13,10 +13,41 @@ enum UserRole {
   STUDENT
 }
 
+enum AttendanceStatus {
+  PRESENT
+  ABSENT
+  LATE
+}
+
 enum UserStatus {
   ACTIVE
   INACTIVE
   SUSPENDED
+}
+
+enum NotificationCategory {
+  EXAMINATION
+  EVENT
+  ANNOUNCEMENT
+  IMPORTANT
+  PLACEMENT
+}
+
+model Notification {
+
+  id String @id @default(uuid())
+
+  title String
+  description String
+  category NotificationCategory
+
+  createdById String
+  createdBy User @relation(fields: [createdById], references: [id])
+
+  createdAt DateTime @default(now())
+
+  @@index([category])
+  @@index([createdAt])
 }
 
 model User {
@@ -41,6 +72,7 @@ model User {
   refreshTokens RefreshToken[]
   student       Student?
   faculty       Faculty?
+  notificationsCreated Notification[]
 
   @@index([email])
   @@index([role])
@@ -79,6 +111,8 @@ model Student {
   cgpa Float?
   attendance Float?
 
+  enrollments Enrollment[]
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -95,6 +129,7 @@ model Department {
 
   students Student[]
   faculty  Faculty[]
+  courses  Course[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -118,9 +153,78 @@ model Faculty {
   designation String?
   phone String?
 
+  courses Course[]
+  attendanceMarked AttendanceRecord[]
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   @@index([employeeId])
   @@index([departmentId])
+}
+
+model Course {
+
+  id String @id @default(uuid())
+
+  code String @unique
+  name String
+  credits Int
+
+  departmentId String
+  department Department @relation(fields: [departmentId], references: [id])
+
+  facultyId String?
+  faculty Faculty? @relation(fields: [facultyId], references: [id])
+
+  enrollments Enrollment[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([code])
+  @@index([departmentId])
+  @@index([facultyId])
+}
+
+model Enrollment {
+
+  id String @id @default(uuid())
+
+  studentId String
+  student Student @relation(fields: [studentId], references: [id], onDelete: Cascade)
+
+  courseId String
+  course Course @relation(fields: [courseId], references: [id], onDelete: Cascade)
+
+  semester Int
+
+  attendanceRecords AttendanceRecord[]
+
+  createdAt DateTime @default(now())
+
+  @@unique([studentId, courseId])
+  @@index([studentId])
+  @@index([courseId])
+}
+
+model AttendanceRecord {
+
+  id String @id @default(uuid())
+
+  enrollmentId String
+  enrollment Enrollment @relation(fields: [enrollmentId], references: [id], onDelete: Cascade)
+
+  date DateTime
+  status AttendanceStatus
+
+  markedById String
+  markedBy Faculty @relation(fields: [markedById], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([enrollmentId, date])
+  @@index([enrollmentId])
+  @@index([date])
 }

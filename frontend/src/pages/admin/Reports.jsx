@@ -1,6 +1,9 @@
 import DashboardLayout from "../../components/DashboardLayout";
 import "./Reports.css";
 
+import { useEffect, useState } from "react";
+import api from "../../api/axios";
+
 import {
 
     FaUserGraduate,
@@ -21,57 +24,25 @@ import {
 
 function Reports(){
 
-    const departments=[
+    const [summary, setSummary] = useState(null);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
 
-        {
+    useEffect(() => {
+        const fetchSummary = async () => {
+            try {
+                const response = await api.get("/reports/summary");
+                setSummary(response.data.data);
+            } catch (err) {
+                console.error("Failed to load report summary:", err);
+                setError("Could not load report data. Please try again later.");
+            } finally {
+                setLoading(false);
+            }
+        };
 
-            name:"Computer Science",
-
-            students:820,
-
-            faculty:42,
-
-            courses:38
-
-        },
-
-        {
-
-            name:"Electronics",
-
-            students:610,
-
-            faculty:31,
-
-            courses:29
-
-        },
-
-        {
-
-            name:"Mechanical",
-
-            students:540,
-
-            faculty:27,
-
-            courses:25
-
-        },
-
-        {
-
-            name:"Information Technology",
-
-            students:450,
-
-            faculty:21,
-
-            courses:19
-
-        }
-
-    ];
+        fetchSummary();
+    }, []);
 
     return(
 
@@ -83,6 +54,14 @@ function Reports(){
 
         >
 
+            {loading && <p>Loading report data...</p>}
+
+            {error && <p className="report-error">{error}</p>}
+
+            {!loading && !error && (
+
+            <>
+
             <div className="report-cards">
 
                 <div className="report-card">
@@ -91,7 +70,7 @@ function Reports(){
 
                     <h2>
 
-                        2,420
+                        {summary.totalStudents}
 
                     </h2>
 
@@ -109,7 +88,7 @@ function Reports(){
 
                     <h2>
 
-                        121
+                        {summary.totalFaculty}
 
                     </h2>
 
@@ -127,7 +106,7 @@ function Reports(){
 
                     <h2>
 
-                        111
+                        {summary.totalCourses}
 
                     </h2>
 
@@ -139,19 +118,19 @@ function Reports(){
 
                 </div>
 
-                <div className="report-card">
+                <div className="report-card report-card-disabled">
 
                     <FaMoneyBillWave/>
 
                     <h2>
 
-                        $1.24M
+                        N/A
 
                     </h2>
 
                     <p>
 
-                        Fee Collection
+                        Fee Collection (not yet tracked)
 
                     </p>
 
@@ -177,17 +156,9 @@ function Reports(){
 
                     <div className="chart-placeholder">
 
-                        <div className="bar b1"></div>
-
-                        <div className="bar b2"></div>
-
-                        <div className="bar b3"></div>
-
-                        <div className="bar b4"></div>
-
-                        <div className="bar b5"></div>
-
-                        <div className="bar b6"></div>
+                        <p className="chart-unavailable">
+                            Growth-over-time data isn't tracked yet — this chart is a visual placeholder.
+                        </p>
 
                     </div>
 
@@ -203,29 +174,9 @@ function Reports(){
 
                     </h3>
 
-                    <button>
-
-                        <FaDownload/>
-
-                        Student Report
-
-                    </button>
-
-                    <button>
-
-                        <FaDownload/>
-
-                        Faculty Report
-
-                    </button>
-
-                    <button>
-
-                        <FaDownload/>
-
-                        Financial Report
-
-                    </button>
+                    <p className="download-unavailable">
+                        Report export isn't built yet. The live data above is real; PDF/CSV generation is a separate feature.
+                    </p>
 
                 </div>
 
@@ -255,11 +206,11 @@ function Reports(){
 
                         {
 
-                            departments.map(
+                            summary.departments.map(
 
-                                (dept,index)=>(
+                                (dept)=>(
 
-                                    <tr key={index}>
+                                    <tr key={dept.id}>
 
                                         <td>{dept.name}</td>
 
@@ -282,6 +233,10 @@ function Reports(){
                 </table>
 
             </div>
+
+            </>
+
+            )}
 
         </DashboardLayout>
 

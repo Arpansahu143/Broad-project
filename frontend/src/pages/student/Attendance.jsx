@@ -1,59 +1,56 @@
 import DashboardLayout from "../../components/DashboardLayout";
 import "./Attendance.css";
+import { useEffect, useState } from "react";
+import api from "../../api/axios";
 
 function Attendance() {
 
-    const attendance = [
+    const [attendance, setAttendance] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
 
-        {
-            code:"CSE301",
-            subject:"Database Management System",
-            attended:42,
-            total:45,
-            percentage:93
-        },
+    useEffect(() => {
+        const fetchAttendance = async () => {
+            try {
+                const response = await api.get("/attendance/my");
+                setAttendance(response.data.data);
+            } catch (err) {
+                console.error(err);
+                setError(
+                    err.response?.data?.message || "Failed to load attendance."
+                );
+            } finally {
+                setLoading(false);
+            }
+        };
 
-        {
-            code:"CSE302",
-            subject:"Operating System",
-            attended:40,
-            total:45,
-            percentage:89
-        },
+        fetchAttendance();
+    }, []);
 
-        {
-            code:"CSE303",
-            subject:"Computer Networks",
-            attended:38,
-            total:45,
-            percentage:84
-        },
+    const overallPercentage =
+        attendance.length === 0
+            ? 0
+            : Math.round(
+                  (attendance.reduce((sum, a) => sum + a.percentage, 0) /
+                      attendance.length) *
+                      10
+              ) / 10;
 
-        {
-            code:"CSE304",
-            subject:"Software Engineering",
-            attended:44,
-            total:45,
-            percentage:98
-        },
+    if (loading) {
+        return (
+            <DashboardLayout role="student" title="Attendance">
+                <p style={{ padding: "16px" }}>Loading attendance...</p>
+            </DashboardLayout>
+        );
+    }
 
-        {
-            code:"CSE305",
-            subject:"Machine Learning",
-            attended:39,
-            total:45,
-            percentage:87
-        },
-
-        {
-            code:"CSE306",
-            subject:"Compiler Design",
-            attended:36,
-            total:45,
-            percentage:80
-        }
-
-    ];
+    if (error) {
+        return (
+            <DashboardLayout role="student" title="Attendance">
+                <p style={{ padding: "16px", color: "#ef4444" }}>{error}</p>
+            </DashboardLayout>
+        );
+    }
 
     return(
 
@@ -77,13 +74,13 @@ function Attendance() {
 
                     <h1>
 
-                        88%
+                        {overallPercentage}%
 
                     </h1>
 
                     <p>
 
-                        Excellent Performance
+                        {overallPercentage >= 75 ? "Good Standing" : "Below Requirement"}
 
                     </p>
 
@@ -139,27 +136,39 @@ function Attendance() {
 
                         {
 
+                            attendance.length === 0 &&
+
+                            <tr>
+                                <td colSpan="5" style={{ textAlign: "center" }}>
+                                    No attendance records yet.
+                                </td>
+                            </tr>
+
+                        }
+
+                        {
+
                             attendance.map(
 
-                                (item,index)=>(
+                                (item)=>(
 
-                                    <tr key={index}>
+                                    <tr key={item.course.id}>
 
                                         <td>
 
-                                            {item.code}
+                                            {item.course.code}
 
                                         </td>
 
                                         <td>
 
-                                            {item.subject}
+                                            {item.course.name}
 
                                         </td>
 
                                         <td>
 
-                                            {item.attended}/{item.total}
+                                            {item.attended}/{item.totalClasses}
 
                                         </td>
 

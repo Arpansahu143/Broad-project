@@ -4,7 +4,9 @@ import cors from "cors";
 import compression from "compression";
 import morgan from "morgan";
 import cookieParser from "cookie-parser";
+import hpp from "hpp";
 
+import { generalLimiter } from "./middlewares/rateLimiter.js";
 import requestId from "./middlewares/requestId.js";
 import requestLogger from "./middlewares/requestLogger.js";
 
@@ -40,6 +42,8 @@ app.use(
 
 app.use(cookieParser());
 
+app.use(hpp());
+
 app.use(morgan("dev"));
 
 /* ==========================================
@@ -65,7 +69,7 @@ app.get("/", (req, res) => {
    API Routes
 ========================================== */
 
-app.use("/api/v1", routes);
+app.use("/api/v1", generalLimiter, routes);
 
 /* ==========================================
    Error Handling

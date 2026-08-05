@@ -1,246 +1,326 @@
 import DashboardLayout from "../../components/DashboardLayout";
 import "./Courses.css";
+import { useEffect, useState } from "react";
+import api from "../../api/axios";
 
 import {
-
-    FaSearch,
-
-    FaPlus,
-
-    FaEye,
-
-    FaEdit,
-
-    FaTrash,
-
-    FaBook
-
+  FaSearch,
+  FaPlus,
+  FaTrash,
+  FaBook,
+  FaTimes,
 } from "react-icons/fa";
 
-function Courses(){
+function Courses() {
+  const [courses, setCourses] = useState([]);
+  const [departments, setDepartments] = useState([]);
+  const [faculty, setFaculty] = useState([]);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
-    const courses=[
+  const [showForm, setShowForm] = useState(false);
+  const [formError, setFormError] = useState(null);
+  const [submitting, setSubmitting] = useState(false);
+  const [form, setForm] = useState({
+    code: "",
+    name: "",
+    credits: "",
+    departmentId: "",
+    facultyId: "",
+  });
 
-        {
+  const loadCourses = async () => {
+    try {
+      const response = await api.get("/courses");
+      setCourses(response.data.data);
+    } catch (err) {
+      console.error(err);
+      setError(err.response?.data?.message || "Failed to load courses.");
+    } finally {
+      setLoading(false);
+    }
+  };
 
-            code:"CSE301",
+  useEffect(() => {
+    loadCourses();
 
-            name:"Database Management System",
+    // Departments/faculty are needed to populate the Add Course form's
+    // dropdowns — fetched once up front.
+    api
+      .get("/departments")
+      .then((res) => setDepartments(res.data.data))
+      .catch((err) => console.error("Failed to load departments:", err));
 
-            department:"Computer Science",
+    api
+      .get("/faculty")
+      .then((res) => setFaculty(res.data.data))
+      .catch((err) => console.error("Failed to load faculty:", err));
+  }, []);
 
-            faculty:"Dr. S. Mishra",
+  const handleFormChange = (e) => {
+    setForm({ ...form, [e.target.name]: e.target.value });
+  };
 
-            credits:4,
+  const handleAddCourse = async (e) => {
+    e.preventDefault();
+    setFormError(null);
+    setSubmitting(true);
 
-            semester:"5th"
+    try {
+      await api.post("/courses", {
+        code: form.code,
+        name: form.name,
+        credits: Number(form.credits),
+        departmentId: form.departmentId,
+        facultyId: form.facultyId || undefined,
+      });
 
-        },
+      setForm({ code: "", name: "", credits: "", departmentId: "", facultyId: "" });
+      setShowForm(false);
+      await loadCourses();
+    } catch (err) {
+      console.error(err);
+      const fieldErrors = err.response?.data?.errors;
+      if (Array.isArray(fieldErrors) && fieldErrors.length > 0) {
+        setFormError(fieldErrors.map((e) => e.msg).join(", "));
+      } else {
+        setFormError(err.response?.data?.message || "Failed to create course.");
+      }
+    } finally {
+      setSubmitting(false);
+    }
+  };
 
-        {
+  const handleDelete = async (id) => {
+    if (!window.confirm("Delete this course? This cannot be undone.")) return;
 
-            code:"CSE302",
+    try {
+      await api.delete(`/courses/${id}`);
+      await loadCourses();
+    } catch (err) {
+      console.error(err);
+      alert(err.response?.data?.message || "Failed to delete course.");
+    }
+  };
 
-            name:"Operating System",
+  const filteredCourses = courses.filter((course) => {
+    const haystack = [
+      course.code,
+      course.name,
+      course.department?.name,
+      course.faculty?.user?.firstName,
+      course.faculty?.user?.lastName,
+    ]
+      .filter(Boolean)
+      .join(" ")
+      .toLowerCase();
 
-            department:"Computer Science",
+    return haystack.includes(searchTerm.trim().toLowerCase());
+  });
 
-            faculty:"Dr. A. Panda",
+  return (
+    <DashboardLayout role="admin" title="Course Management">
+      <div className="page-header">
+        <div className="search-box">
+          <FaSearch />
+          <input
+            type="text"
+            placeholder="Search Course..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+          />
+        </div>
+        <button className="add-btn" onClick={() => setShowForm(true)}>
+          <FaPlus />
+          Add Course
+        </button>
+      </div>
 
-            credits:4,
+      {loading && <p style={{ padding: "16px" }}>Loading courses...</p>}
+      {error && <p style={{ padding: "16px", color: "#ef4444" }}>{error}</p>}
 
-            semester:"5th"
+      {!loading && !error && (
+        <div className="courses-table">
+          <table>
+            <thead>
+              <tr>
+                <th>Course Code</th>
+                <th>Course Name</th>
+                <th>Department</th>
+                <th>Faculty</th>
+                <th>Credits</th>
+                <th>Enrolled</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              {filteredCourses.map((course) => (
+                <tr key={course.id}>
+                  <td>
+                    <div className="course-code">
+                      <FaBook />
+                      {course.code}
+                    </div>
+                  </td>
+                  <td>{course.name}</td>
+                  <td>{course.department?.name || "—"}</td>
+                  <td>
+                    {course.faculty
+                      ? `${course.faculty.user?.firstName} ${course.faculty.user?.lastName}`
+                      : "Unassigned"}
+                  </td>
+                  <td>{course.credits}</td>
+                  <td>{course._count?.enrollments ?? 0}</td>
+                  <td>
+                    <div className="action-btns">
+                      <button
+                        className="delete-btn"
+                        onClick={() => handleDelete(course.id)}
+                        title="Delete"
+                      >
+                        <FaTrash />
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              ))}
+              {filteredCourses.length === 0 && (
+                <tr>
+                  <td colSpan="7" style={{ textAlign: "center" }}>
+                    No courses found.
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        </div>
+      )}
 
-        },
-
-        {
-
-            code:"ECE205",
-
-            name:"Digital Electronics",
-
-            department:"Electronics",
-
-            faculty:"Dr. R. Das",
-
-            credits:3,
-
-            semester:"3rd"
-
-        },
-
-        {
-
-            code:"IT401",
-
-            name:"Cloud Computing",
-
-            department:"Information Technology",
-
-            faculty:"Dr. B. Nayak",
-
-            credits:4,
-
-            semester:"7th"
-
-        },
-
-        {
-
-            code:"CSE405",
-
-            name:"Artificial Intelligence",
-
-            department:"Computer Science",
-
-            faculty:"Dr. P. Mohanty",
-
-            credits:4,
-
-            semester:"7th"
-
-        }
-
-    ];
-
-    return(
-
-        <DashboardLayout
-
-            role="admin"
-
-            title="Course Management"
-
+      {showForm && (
+        <div
+          style={{
+            position: "fixed",
+            inset: 0,
+            background: "rgba(0,0,0,0.5)",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            zIndex: 1000,
+          }}
+          onClick={() => setShowForm(false)}
         >
-
-            <div className="page-header">
-
-                <div className="search-box">
-
-                    <FaSearch/>
-
-                    <input
-
-                        type="text"
-
-                        placeholder="Search Course..."
-
-                    />
-
-                </div>
-
-                <button className="add-btn">
-
-                    <FaPlus/>
-
-                    Add Course
-
-                </button>
-
+          <div
+            style={{
+              background: "#1e1e2d",
+              borderRadius: "12px",
+              padding: "24px",
+              width: "420px",
+              maxWidth: "90vw",
+            }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+                marginBottom: "16px",
+              }}
+            >
+              <h3 style={{ margin: 0 }}>Add Course</h3>
+              <button
+                onClick={() => setShowForm(false)}
+                style={{ background: "none", border: "none", color: "#fff", cursor: "pointer" }}
+              >
+                <FaTimes />
+              </button>
             </div>
 
-            <div className="courses-table">
+            <form onSubmit={handleAddCourse}>
+              <div style={{ marginBottom: "12px" }}>
+                <input
+                  name="code"
+                  placeholder="Course Code (e.g. CS301)"
+                  value={form.code}
+                  onChange={handleFormChange}
+                  required
+                  style={{ width: "100%", padding: "8px", borderRadius: "6px" }}
+                />
+              </div>
+              <div style={{ marginBottom: "12px" }}>
+                <input
+                  name="name"
+                  placeholder="Course Name"
+                  value={form.name}
+                  onChange={handleFormChange}
+                  required
+                  style={{ width: "100%", padding: "8px", borderRadius: "6px" }}
+                />
+              </div>
+              <div style={{ marginBottom: "12px" }}>
+                <input
+                  name="credits"
+                  type="number"
+                  min="1"
+                  max="10"
+                  placeholder="Credits"
+                  value={form.credits}
+                  onChange={handleFormChange}
+                  required
+                  style={{ width: "100%", padding: "8px", borderRadius: "6px" }}
+                />
+              </div>
+              <div style={{ marginBottom: "12px" }}>
+                <select
+                  name="departmentId"
+                  value={form.departmentId}
+                  onChange={handleFormChange}
+                  required
+                  style={{ width: "100%", padding: "8px", borderRadius: "6px" }}
+                >
+                  <option value="">Select Department</option>
+                  {departments.map((d) => (
+                    <option key={d.id} value={d.id}>
+                      {d.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              <div style={{ marginBottom: "16px" }}>
+                <select
+                  name="facultyId"
+                  value={form.facultyId}
+                  onChange={handleFormChange}
+                  style={{ width: "100%", padding: "8px", borderRadius: "6px" }}
+                >
+                  <option value="">Unassigned (optional)</option>
+                  {faculty.map((f) => (
+                    <option key={f.id} value={f.id}>
+                      {f.user?.firstName} {f.user?.lastName}
+                    </option>
+                  ))}
+                </select>
+              </div>
 
-                <table>
+              {formError && (
+                <p style={{ color: "#ef4444", marginBottom: "12px" }}>{formError}</p>
+              )}
 
-                    <thead>
-
-                        <tr>
-
-                            <th>Course Code</th>
-
-                            <th>Course Name</th>
-
-                            <th>Department</th>
-
-                            <th>Faculty</th>
-
-                            <th>Credits</th>
-
-                            <th>Semester</th>
-
-                            <th>Action</th>
-
-                        </tr>
-
-                    </thead>
-
-                    <tbody>
-
-                        {
-
-                            courses.map(
-
-                                (course,index)=>(
-
-                                    <tr key={index}>
-
-                                        <td>
-
-                                            <div className="course-code">
-
-                                                <FaBook/>
-
-                                                {course.code}
-
-                                            </div>
-
-                                        </td>
-
-                                        <td>{course.name}</td>
-
-                                        <td>{course.department}</td>
-
-                                        <td>{course.faculty}</td>
-
-                                        <td>{course.credits}</td>
-
-                                        <td>{course.semester}</td>
-
-                                        <td>
-
-                                            <div className="action-btns">
-
-                                                <button>
-
-                                                    <FaEye/>
-
-                                                </button>
-
-                                                <button>
-
-                                                    <FaEdit/>
-
-                                                </button>
-
-                                                <button>
-
-                                                    <FaTrash/>
-
-                                                </button>
-
-                                            </div>
-
-                                        </td>
-
-                                    </tr>
-
-                                )
-
-                            )
-
-                        }
-
-                    </tbody>
-
-                </table>
-
-            </div>
-
-        </DashboardLayout>
-
-    );
-
+              <button
+                type="submit"
+                disabled={submitting}
+                className="add-btn"
+                style={{ width: "100%", justifyContent: "center" }}
+              >
+                {submitting ? "Creating..." : "Create Course"}
+              </button>
+            </form>
+          </div>
+        </div>
+      )}
+    </DashboardLayout>
+  );
 }
 
 export default Courses;

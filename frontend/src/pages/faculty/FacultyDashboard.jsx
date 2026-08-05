@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, NavLink } from 'react-router-dom';
+import api from '../../api/axios';
 import './FacultyDashboard.css';
 
 import {
@@ -22,7 +23,15 @@ function FacultyDashboard() {
     }
   }, []);
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
+    const refreshToken = localStorage.getItem("refreshToken");
+    try {
+      if (refreshToken) {
+        await api.post("/auth/logout", { refreshToken });
+      }
+    } catch (error) {
+      console.error("Logout request failed:", error);
+    }
     localStorage.removeItem("accessToken");
     localStorage.removeItem("refreshToken");
     localStorage.removeItem("user");
@@ -39,12 +48,12 @@ function FacultyDashboard() {
 
   // Faculty Sidebar Menu
   const menuItems = [
-    { label: "Dashboard", icon: <FaRegIdCard />, active: true },
-    { label: "Attendance", icon: <FaUserClock /> },
-    { label: "Courses", icon: <FaBook /> },
-    { label: "Students", icon: <FaUserGraduate /> },
+    { label: "Dashboard", icon: <FaRegIdCard />, path: "/faculty/dashboard" },
+    { label: "Attendance", icon: <FaUserClock />, path: "/faculty/attendance" },
+    { label: "Courses", icon: <FaBook />, path: "/faculty/courses" },
+    { label: "Students", icon: <FaUserGraduate />, path: "/faculty/students" },
     { label: "Examinations", icon: <FaRegClipboard /> },
-    { label: "Notifications", icon: <FaBell /> },
+    { label: "Notifications", icon: <FaBell />, path: "/faculty/notifications" },
     { label: "Settings", icon: <FaCog /> },
   ];
 
@@ -74,12 +83,30 @@ function FacultyDashboard() {
         </div>
 
         <nav className="side-menu">
-          {menuItems.map((item, idx) => (
-            <a key={idx} href="#" className={item.active ? "menu-item active" : "menu-item"}>
-              {item.icon}
-              <span>{item.label}</span>
-            </a>
-          ))}
+          {menuItems.map((item, idx) =>
+            item.path ? (
+              <NavLink
+                key={idx}
+                to={item.path}
+                className={({ isActive }) =>
+                  isActive ? "menu-item active" : "menu-item"
+                }
+              >
+                {item.icon}
+                <span>{item.label}</span>
+              </NavLink>
+            ) : (
+              <span
+                key={idx}
+                className="menu-item"
+                style={{ opacity: 0.5, cursor: "default" }}
+                title="Coming soon"
+              >
+                {item.icon}
+                <span>{item.label}</span>
+              </span>
+            )
+          )}
         </nav>
 
         <div className="profile-section">
@@ -164,7 +191,10 @@ function FacultyDashboard() {
                     <span className="class-title">{cls.name}</span>
                     <span className="class-meta"><FaClock /> {cls.time} • <strong>{cls.room}</strong></span>
                   </div>
-                  <button className="mark-attendance-btn">
+                  <button
+                    className="mark-attendance-btn"
+                    onClick={() => navigate("/faculty/attendance")}
+                  >
                     <FaCheckCircle /> Mark Attendance
                   </button>
                 </div>

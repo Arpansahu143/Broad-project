@@ -70,6 +70,20 @@ class AuthRepository {
   }
 
   /**
+   * Update a user's password hash
+   */
+  async updatePassword(userId, hashedPassword) {
+    return prisma.user.update({
+      where: {
+        id: userId,
+      },
+      data: {
+        password: hashedPassword,
+      },
+    });
+  }
+
+  /**
    * Delete all refresh tokens for a user
    */
   async revokeAllUserTokens(userId) {

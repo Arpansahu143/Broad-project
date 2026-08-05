@@ -277,6 +277,14 @@
 
 }
 
+.action-btns .delete-btn{
+
+    background:#ffe8e8;
+
+    color:#dc2626;
+
+}
+
 .action-btns button:hover{
 
     transform:translateY(-2px);

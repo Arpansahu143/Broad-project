@@ -94,6 +94,12 @@ function Sidebar({ role = "admin" }) {
             name: "Attendance",
             path: "/faculty/attendance",
             icon: <FaClipboardCheck />
+        },
+
+        {
+            name: "Notifications",
+            path: "/faculty/notifications",
+            icon: <FaBell />
         }
 
     ];
@@ -130,6 +136,12 @@ function Sidebar({ role = "admin" }) {
             name: "Reports",
             path: "/admin/reports",
             icon: <FaChartBar />
+        },
+
+        {
+            name: "Notifications",
+            path: "/admin/notifications",
+            icon: <FaBell />
         }
 
     ];

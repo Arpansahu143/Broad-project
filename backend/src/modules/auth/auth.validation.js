@@ -92,3 +92,19 @@ export const createUserValidation = [
     .isIn(Object.values(ROLES))
     .withMessage("Invalid role"),
 ];
+
+export const changePasswordValidation = [
+  body("currentPassword")
+    .notEmpty()
+    .withMessage("Current password is required"),
+
+  body("newPassword")
+    .isLength({ min: 8 })
+    .withMessage("New password must contain at least 8 characters")
+    .matches(/[A-Z]/)
+    .withMessage("New password must contain one uppercase letter")
+    .matches(/[a-z]/)
+    .withMessage("New password must contain one lowercase letter")
+    .matches(/[0-9]/)
+    .withMessage("New password must contain one number"),
+];

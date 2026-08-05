@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import './StudentDashboard.css';
 import { NavLink, useNavigate } from "react-router-dom";
+import api from "../../api/axios";
 
 import {
   FaUniversity, FaRegIdCard, FaUserGraduate, FaBook,
@@ -22,7 +23,15 @@ useEffect(() => {
   }
 }, []);
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
+    const refreshToken = localStorage.getItem("refreshToken");
+    try {
+      if (refreshToken) {
+        await api.post("/auth/logout", { refreshToken });
+      }
+    } catch (error) {
+      console.error("Logout request failed:", error);
+    }
     localStorage.removeItem("accessToken");
     localStorage.removeItem("refreshToken");
     localStorage.removeItem("user");

@@ -1,6 +1,9 @@
 import DashboardLayout from "../../components/DashboardLayout";
 import "./Notifications.css";
 
+import { useEffect, useState } from "react";
+import api from "../../api/axios";
+
 import {
     FaBell,
     FaCalendarAlt,
@@ -9,56 +12,36 @@ import {
     FaBullhorn
 } from "react-icons/fa";
 
+// Maps backend category enum values to display icon + CSS type class
+const CATEGORY_META = {
+    EXAMINATION: { icon: <FaBook />, type: "exam", label: "Examination" },
+    EVENT: { icon: <FaCalendarAlt />, type: "event", label: "Event" },
+    ANNOUNCEMENT: { icon: <FaBullhorn />, type: "announcement", label: "Announcement" },
+    IMPORTANT: { icon: <FaExclamationCircle />, type: "important", label: "Important" },
+    PLACEMENT: { icon: <FaBell />, type: "placement", label: "Placement" },
+};
+
 function Notifications() {
 
-    const notifications = [
+    const [notifications, setNotifications] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
 
-        {
-            title:"Mid Semester Examination Schedule Released",
-            category:"Examination",
-            date:"20 July 2026",
-            icon:<FaBook/>,
-            type:"exam",
-            description:"The examination timetable for the Mid Semester Examination has been published. Students are advised to download the schedule from the Examination Portal."
-        },
+    useEffect(() => {
+        const fetchNotifications = async () => {
+            try {
+                const response = await api.get("/notifications");
+                setNotifications(response.data.data);
+            } catch (err) {
+                console.error("Failed to load notifications:", err);
+                setError("Could not load notifications. Please try again later.");
+            } finally {
+                setLoading(false);
+            }
+        };
 
-        {
-            title:"University Tech Fest 2026",
-            category:"Event",
-            date:"18 July 2026",
-            icon:<FaCalendarAlt/>,
-            type:"event",
-            description:"Registrations are now open for Tech Fest 2026. Participate in coding, robotics, AI and gaming competitions."
-        },
-
-        {
-            title:"Library Maintenance Notice",
-            category:"Announcement",
-            date:"16 July 2026",
-            icon:<FaBullhorn/>,
-            type:"announcement",
-            description:"The Central Library Portal will remain unavailable from 10 PM to 2 AM due to scheduled maintenance."
-        },
-
-        {
-            title:"Fee Payment Reminder",
-            category:"Important",
-            date:"15 July 2026",
-            icon:<FaExclamationCircle/>,
-            type:"important",
-            description:"Students who have pending semester fees are requested to complete the payment before 30 July to avoid late fees."
-        },
-
-        {
-            title:"Placement Training Session",
-            category:"Placement",
-            date:"12 July 2026",
-            icon:<FaBell/>,
-            type:"placement",
-            description:"Campus placement training for Final Year students will begin from Monday in Auditorium Hall."
-        }
-
-    ];
+        fetchNotifications();
+    }, []);
 
     return(
 
@@ -70,63 +53,78 @@ function Notifications() {
 
         >
 
+            {loading && <p>Loading notifications...</p>}
+
+            {error && <p className="notification-error">{error}</p>}
+
+            {!loading && !error && notifications.length === 0 && (
+                <p>No notifications yet.</p>
+            )}
+
             <div className="notification-list">
 
                 {
 
                     notifications.map(
+                        (item) => {
+                            const meta = CATEGORY_META[item.category] || CATEGORY_META.ANNOUNCEMENT;
 
-                        (item,index)=>(
+                            return (
 
-                            <div
+                                <div
 
-                                className={`notification-card ${item.type}`}
+                                    className={`notification-card ${meta.type}`}
 
-                                key={index}
+                                    key={item.id}
 
-                            >
+                                >
 
-                                <div className="notification-icon">
+                                    <div className="notification-icon">
 
-                                    {item.icon}
-
-                                </div>
-
-                                <div className="notification-content">
-
-                                    <div className="notification-top">
-
-                                        <span>
-
-                                            {item.category}
-
-                                        </span>
-
-                                        <small>
-
-                                            {item.date}
-
-                                        </small>
+                                        {meta.icon}
 
                                     </div>
 
-                                    <h3>
+                                    <div className="notification-content">
 
-                                        {item.title}
+                                        <div className="notification-top">
 
-                                    </h3>
+                                            <span>
 
-                                    <p>
+                                                {meta.label}
 
-                                        {item.description}
+                                            </span>
 
-                                    </p>
+                                            <small>
+
+                                                {new Date(item.createdAt).toLocaleDateString("en-GB", {
+                                                    day: "numeric",
+                                                    month: "long",
+                                                    year: "numeric",
+                                                })}
+
+                                            </small>
+
+                                        </div>
+
+                                        <h3>
+
+                                            {item.title}
+
+                                        </h3>
+
+                                        <p>
+
+                                            {item.description}
+
+                                        </p>
+
+                                    </div>
 
                                 </div>
 
-                            </div>
-
-                        )
+                            );
+                        }
 
                     )
 

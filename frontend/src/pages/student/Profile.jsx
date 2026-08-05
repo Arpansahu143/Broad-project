@@ -1,18 +1,32 @@
 import DashboardLayout from "../../components/DashboardLayout";
 import "./Profile.css";
 import { useEffect, useState } from "react";
+import api from "../../api/axios";
 
 function Profile() {
 
-    const [user, setUser] = useState(null);
+    const [profile, setProfile] = useState(null);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
 
-useEffect(() => {
-  const loggedInUser = JSON.parse(localStorage.getItem("user"));
+    useEffect(() => {
+        const fetchProfile = async () => {
+            try {
+                const response = await api.get("/students/profile");
+                setProfile(response.data.data);
+            } catch (err) {
+                console.error("Failed to load profile:", err);
+                setError(
+                    err.response?.data?.message || "Failed to load profile."
+                );
+            } finally {
+                setLoading(false);
+            }
+        };
 
-  if (loggedInUser) {
-    setUser(loggedInUser);
-  }
-}, []);
+        fetchProfile();
+    }, []);
+
     return (
 
         <DashboardLayout
@@ -22,6 +36,11 @@ useEffect(() => {
             title="My Profile"
 
         >
+
+            {loading && <p style={{ padding: "16px" }}>Loading profile...</p>}
+            {error && <p style={{ padding: "16px", color: "#ef4444" }}>{error}</p>}
+
+            {!loading && !error && profile && (
 
             <div className="profile-container">
 
@@ -40,18 +59,18 @@ useEffect(() => {
                         <div>
 
                             <h2>
-    {user ? `${user.firstName} ${user.lastName}` : "Loading..."}
+    {profile.user?.firstName} {profile.user?.lastName}
 </h2>
 
                             <p>
 
-                                B.Tech Computer Science & Engineering
+                                {profile.department?.name || "Department not assigned"}
 
                             </p>
 
                             <span>
 
-                                Student ID : SOA2301045
+                                Student ID : {profile.studentId}
 
                             </span>
 
@@ -65,7 +84,7 @@ useEffect(() => {
 
                             <label>Email</label>
 
-                            <p>{user?.email || "Loading..."}</p>
+                            <p>{profile.user?.email}</p>
 
                         </div>
 
@@ -73,7 +92,7 @@ useEffect(() => {
 
                             <label>Phone</label>
 
-                            <p>+91 9876543210</p>
+                            <p>{profile.phone || "Not provided"}</p>
 
                         </div>
 
@@ -81,7 +100,7 @@ useEffect(() => {
 
                             <label>Semester</label>
 
-                            <p>5th Semester</p>
+                            <p>{profile.semester ? `${profile.semester}${["st","nd","rd"][((profile.semester+90)%100-10)%10-1]||"th"} Semester` : "—"}</p>
 
                         </div>
 
@@ -89,7 +108,7 @@ useEffect(() => {
 
                             <label>Department</label>
 
-                            <p>Computer Science & Engineering</p>
+                            <p>{profile.department?.name || "Not assigned"}</p>
 
                         </div>
 
@@ -97,7 +116,7 @@ useEffect(() => {
 
                             <label>CGPA</label>
 
-                            <p>8.59</p>
+                            <p>{profile.cgpa ?? "Not recorded"}</p>
 
                         </div>
 
@@ -105,7 +124,7 @@ useEffect(() => {
 
                             <label>Attendance</label>
 
-                            <p>92%</p>
+                            <p>{profile.attendance != null ? `${profile.attendance}%` : "Not recorded"}</p>
 
                         </div>
 
@@ -113,15 +132,7 @@ useEffect(() => {
 
                             <label>Address</label>
 
-                            <p>Bhubaneswar, Odisha</p>
-
-                        </div>
-
-                        <div className="profile-item">
-
-                            <label>Admission Year</label>
-
-                            <p>2023</p>
+                            <p>{profile.address || "Not provided"}</p>
 
                         </div>
 
@@ -130,6 +141,8 @@ useEffect(() => {
                 </div>
 
             </div>
+
+            )}
 
         </DashboardLayout>
 

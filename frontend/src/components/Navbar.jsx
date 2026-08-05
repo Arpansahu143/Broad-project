@@ -1,5 +1,6 @@
 import "./Navbar.css";
 
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 
 import {
@@ -9,6 +10,27 @@ import {
 } from "react-icons/fa";
 
 function Navbar() {
+
+    const [user, setUser] = useState(null);
+
+    useEffect(() => {
+        try {
+            const stored = JSON.parse(localStorage.getItem("user"));
+            if (stored) {
+                setUser(stored);
+            }
+        } catch {
+            setUser(null);
+        }
+    }, []);
+
+    const displayName = user
+        ? `${user.firstName} ${user.lastName}`
+        : "Loading...";
+
+    const displayRole = user
+        ? user.role.charAt(0) + user.role.slice(1).toLowerCase()
+        : "";
 
     return (
 
@@ -48,12 +70,6 @@ function Navbar() {
 
                     <FaBell />
 
-                    <span>
-
-                        3
-
-                    </span>
-
                 </button>
 
                 <div className="profile-section">
@@ -64,13 +80,13 @@ function Navbar() {
 
                         <h4>
 
-                            Arpan Sahu
+                            {displayName}
 
                         </h4>
 
                         <p>
 
-                            Administrator
+                            {displayRole}
 
                         </p>
 

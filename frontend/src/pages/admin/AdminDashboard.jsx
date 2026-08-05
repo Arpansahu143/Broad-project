@@ -1,8 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, NavLink } from 'react-router-dom';
+import api from '../../api/axios';
 import './AdminDashboard.css';
-// Make sure to install: charts.css
-import 'charts.css';
 
 // Icons
 import {
@@ -27,7 +26,17 @@ function AdminDashboard() {
     }
   }, []);
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
+    const refreshToken = localStorage.getItem("refreshToken");
+    try {
+      if (refreshToken) {
+        await api.post("/auth/logout", { refreshToken });
+      }
+    } catch (error) {
+      // Even if the server call fails (e.g. token already expired),
+      // still clear local session so the user isn't stuck logged in.
+      console.error("Logout request failed:", error);
+    }
     localStorage.removeItem("accessToken");
     localStorage.removeItem("refreshToken");
     localStorage.removeItem("user");
@@ -45,20 +54,20 @@ function AdminDashboard() {
 
   // 2. Data for the Sidebar Menu
   const menuItems = [
-    { label: "Dashboard", icon: <FaRegIdCard />, active: true },
+    { label: "Dashboard", icon: <FaRegIdCard />, path: "/admin/dashboard" },
     { label: "Admissions", icon: <FaRegIdCard /> },
-    { label: "Students", icon: <FaUserGraduate /> },
-    { label: "Faculty", icon: <FaChalkboardTeacher /> },
-    { label: "Courses", icon: <FaBook /> },
+    { label: "Students", icon: <FaUserGraduate />, path: "/admin/students" },
+    { label: "Faculty", icon: <FaChalkboardTeacher />, path: "/admin/faculty" },
+    { label: "Courses", icon: <FaBook />, path: "/admin/courses" },
     { label: "Attendance", icon: <FaUserClock /> },
     { label: "Examinations", icon: <FaRegClipboard /> },
     { label: "Fee Management", icon: <FaCoins /> },
     { label: "Hostel", icon: <FaHotel /> },
     { label: "Library", icon: <FaBuilding /> },
     { label: "Events", icon: <FaCalendarAlt /> },
-    { label: "Notifications", icon: <FaBell /> },
+    { label: "Notifications", icon: <FaBell />, path: "/admin/notifications" },
     { label: "Analytics", icon: <FaChartLine /> },
-    { label: "Reports", icon: <FaRegFileAlt /> },
+    { label: "Reports", icon: <FaRegFileAlt />, path: "/admin/reports" },
     { label: "Settings", icon: <FaCog /> },
   ];
 
@@ -91,12 +100,30 @@ function AdminDashboard() {
         </div>
 
         <nav className="side-menu">
-          {menuItems.map((item, idx) => (
-            <a key={idx} href="#" className={item.active ? "menu-item active" : "menu-item"}>
-              {item.icon}
-              <span>{item.label}</span>
-            </a>
-          ))}
+          {menuItems.map((item, idx) =>
+            item.path ? (
+              <NavLink
+                key={idx}
+                to={item.path}
+                className={({ isActive }) =>
+                  isActive ? "menu-item active" : "menu-item"
+                }
+              >
+                {item.icon}
+                <span>{item.label}</span>
+              </NavLink>
+            ) : (
+              <span
+                key={idx}
+                className="menu-item"
+                style={{ opacity: 0.5, cursor: "default" }}
+                title="Coming soon"
+              >
+                {item.icon}
+                <span>{item.label}</span>
+              </span>
+            )
+          )}
         </nav>
 
         <div className="profile-section">
