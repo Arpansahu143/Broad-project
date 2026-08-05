@@ -3,8 +3,7 @@
  *
  * Creates one ADMIN account so you have a way to log in and use
  * ADMIN-only endpoints (create departments, create faculty, etc.)
- * without relying on public signup, which is intentionally locked
- * to STUDENT accounts only.
+ * without relying on public signup.
  *
  * Safe to re-run: checks for an existing admin by email first and
  * skips creation instead of erroring or duplicating.
