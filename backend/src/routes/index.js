@@ -8,6 +8,7 @@ import courseRoutes from "../modules/course/index.js";
 import attendanceRoutes from "../modules/attendance/index.js";
 import notificationRoutes from "../modules/notification/index.js";
 import reportRoutes from "../modules/report/index.js";
+import examRoutes from "../modules/exam/index.js";
 
 const router = Router();
 
@@ -26,5 +27,6 @@ router.use("/courses", courseRoutes);
 router.use("/attendance", attendanceRoutes);
 router.use("/notifications", notificationRoutes);
 router.use("/reports", reportRoutes);
+router.use("/exams", examRoutes);
 
 export default router;

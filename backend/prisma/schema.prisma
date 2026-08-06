@@ -19,6 +19,13 @@ enum AttendanceStatus {
   LATE
 }
 
+enum ExamType {
+  QUIZ
+  ASSIGNMENT
+  MIDTERM
+  FINAL
+}
+
 enum UserStatus {
   ACTIVE
   INACTIVE
@@ -155,6 +162,8 @@ model Faculty {
 
   courses Course[]
   attendanceMarked AttendanceRecord[]
+  examsCreated Exam[]
+  gradesGiven Grade[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -178,6 +187,7 @@ model Course {
   faculty Faculty? @relation(fields: [facultyId], references: [id])
 
   enrollments Enrollment[]
+  exams Exam[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -200,12 +210,61 @@ model Enrollment {
   semester Int
 
   attendanceRecords AttendanceRecord[]
+  grades Grade[]
 
   createdAt DateTime @default(now())
 
   @@unique([studentId, courseId])
   @@index([studentId])
   @@index([courseId])
+}
+
+model Exam {
+
+  id String @id @default(uuid())
+
+  courseId String
+  course Course @relation(fields: [courseId], references: [id], onDelete: Cascade)
+
+  title String
+  examType ExamType
+  maxMarks Float
+  examDate DateTime
+
+  createdById String
+  createdBy Faculty @relation(fields: [createdById], references: [id])
+
+  grades Grade[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([courseId])
+  @@index([examDate])
+}
+
+model Grade {
+
+  id String @id @default(uuid())
+
+  examId String
+  exam Exam @relation(fields: [examId], references: [id], onDelete: Cascade)
+
+  enrollmentId String
+  enrollment Enrollment @relation(fields: [enrollmentId], references: [id], onDelete: Cascade)
+
+  marksObtained Float
+  remarks String?
+
+  gradedById String
+  gradedBy Faculty @relation(fields: [gradedById], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([examId, enrollmentId])
+  @@index([examId])
+  @@index([enrollmentId])
 }
 
 model AttendanceRecord {

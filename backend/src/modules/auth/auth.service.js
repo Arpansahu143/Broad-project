@@ -79,9 +79,9 @@ class AuthService {
 
   /**
    * Create a user with any role — ADMIN only.
-   * Used to create FACULTY/ADMIN accounts, since public /register
-   * is locked to STUDENT. Does not issue tokens: the admin creating
-   * the account is not logging in as that user.
+   * Used when an Admin wants to provision an account directly.
+   * Does not issue tokens: the admin creating the account is not
+   * logging in as that user.
    */
   async createUserByAdmin(userData) {
     const { firstName, lastName, email, password, role } = userData;
