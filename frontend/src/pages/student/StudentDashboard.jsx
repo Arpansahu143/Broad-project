@@ -63,6 +63,11 @@ useEffect(() => {
     path: "/student/courses",
   },
   {
+    label: "Grades",
+    icon: <FaGraduationCap />,
+    path: "/student/grades",
+  },
+  {
     label: "Notifications",
     icon: <FaBell />,
     path: "/student/notifications",

@@ -52,7 +52,7 @@ function FacultyDashboard() {
     { label: "Attendance", icon: <FaUserClock />, path: "/faculty/attendance" },
     { label: "Courses", icon: <FaBook />, path: "/faculty/courses" },
     { label: "Students", icon: <FaUserGraduate />, path: "/faculty/students" },
-    { label: "Examinations", icon: <FaRegClipboard /> },
+    { label: "Examinations", icon: <FaRegClipboard />, path: "/faculty/exams" },
     { label: "Notifications", icon: <FaBell />, path: "/faculty/notifications" },
     { label: "Settings", icon: <FaCog /> },
   ];

@@ -12,6 +12,8 @@ import {
     FaUsers,
     FaChalkboardTeacher,
     FaChartBar,
+    FaUniversity,
+    FaGraduationCap,
     FaSignOutAlt
 } from "react-icons/fa";
 
@@ -61,6 +63,12 @@ function Sidebar({ role = "admin" }) {
         },
 
         {
+            name: "Grades",
+            path: "/student/grades",
+            icon: <FaGraduationCap />
+        },
+
+        {
             name: "Notifications",
             path: "/student/notifications",
             icon: <FaBell />
@@ -97,6 +105,12 @@ function Sidebar({ role = "admin" }) {
         },
 
         {
+            name: "Exams",
+            path: "/faculty/exams",
+            icon: <FaGraduationCap />
+        },
+
+        {
             name: "Notifications",
             path: "/faculty/notifications",
             icon: <FaBell />
@@ -124,6 +138,12 @@ function Sidebar({ role = "admin" }) {
             name: "Faculty",
             path: "/admin/faculty",
             icon: <FaChalkboardTeacher />
+        },
+
+        {
+            name: "Departments",
+            path: "/admin/departments",
+            icon: <FaUniversity />
         },
 
         {
