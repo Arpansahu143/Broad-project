@@ -37,10 +37,17 @@ pipeline {
                         ]) {
 
                             sh """
+                                echo "===== SONAR DEBUG ====="
+                                echo "Scanner: ${scannerHome}"
+                                echo "Host: \$SONAR_HOST_URL"
+                                echo "Token Length: \${#SONAR_TOKEN}"
+                                echo "======================="
+
                                 ${scannerHome}/bin/sonar-scanner \
                                   -Dsonar.projectKey=university-mis \
                                   -Dsonar.projectName="University MIS" \
                                   -Dsonar.sources=. \
+                                  -Dsonar.host.url=\$SONAR_HOST_URL \
                                   -Dsonar.token=\$SONAR_TOKEN
                             """
                         }
