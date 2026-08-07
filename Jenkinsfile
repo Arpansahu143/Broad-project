@@ -79,7 +79,7 @@ pipeline {
             steps {
                 sshagent(credentials: ['ec2-ssh']) {
                     sh '''
-                        ssh -o StrictHostKeyChecking=no ubuntu@<EC2_PUBLIC_IP> << 'EOF'
+                        ssh -o StrictHostKeyChecking=no ubuntu@15.252.73.205 << 'EOF'
                         cd ~/university-mis
                         docker compose pull
                         docker compose down
