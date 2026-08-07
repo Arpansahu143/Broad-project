@@ -38,11 +38,11 @@ pipeline {
 
                             sh """
                                 ${scannerHome}/bin/sonar-scanner \
-                                  -Dsonar.projectKey=university-mis \
-                                  -Dsonar.projectName="University MIS" \
-                                  -Dsonar.sources=. \
-                                  -Dsonar.host.url=http://host.docker.internal:9000 \
-                                  -Dsonar.token=$SONAR_TOKEN
+                                -Dsonar.projectKey=university-mis \
+                                -Dsonar.projectName='University MIS' \
+                                -Dsonar.sources=. \
+                                -Dsonar.host.url=http://host.docker.internal:9000 \
+                                -Dsonar.token=\$SONAR_TOKEN
                             """
                         }
                     }
@@ -74,7 +74,6 @@ pipeline {
 
         stage('Docker Login') {
             steps {
-
                 withCredentials([
                     usernamePassword(
                         credentialsId: 'dockerhub',
@@ -94,7 +93,6 @@ pipeline {
 
         stage('Push Images') {
             steps {
-
                 sh """
                     docker push ${BACKEND_IMAGE}
                     docker push ${FRONTEND_IMAGE}
@@ -104,9 +102,7 @@ pipeline {
 
         stage('Deploy to EC2') {
             steps {
-
                 sshagent(credentials: ['ec2-ssh']) {
-
                     sh """
                         ssh -o StrictHostKeyChecking=no ubuntu@15.252.73.205 '
                             cd ~/university-mis &&
@@ -122,7 +118,6 @@ pipeline {
     }
 
     post {
-
         success {
             echo "=================================="
             echo "CI/CD Pipeline Completed Successfully"
