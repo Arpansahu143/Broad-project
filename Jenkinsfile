@@ -74,13 +74,28 @@ pipeline {
                 """
             }
         }
+
+        stage('Deploy to EC2') {
+            steps {
+                sshagent(credentials: ['ec2-ssh']) {
+                    sh '''
+                        ssh -o StrictHostKeyChecking=no ubuntu@<EC2_PUBLIC_IP> << 'EOF'
+                        cd ~/university-mis
+                        docker compose pull
+                        docker compose down
+                        docker compose up -d
+                        EOF
+                    '''
+                }
+            }
+        }
     }
 
     post {
 
         success {
             echo "=================================="
-            echo "CI Pipeline Completed Successfully"
+            echo "CI/CD Pipeline Completed Successfully"
             echo "=================================="
         }
 
