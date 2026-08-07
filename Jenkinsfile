@@ -38,11 +38,10 @@ pipeline {
 
                             sh """
                                 ${scannerHome}/bin/sonar-scanner \
-                                -Dsonar.projectKey=university-mis \
-                                -Dsonar.projectName='University MIS' \
-                                -Dsonar.sources=. \
-                                -Dsonar.host.url=http://host.docker.internal:9000 \
-                                -Dsonar.token=\$SONAR_TOKEN
+                                  -Dsonar.projectKey=university-mis \
+                                  -Dsonar.projectName="University MIS" \
+                                  -Dsonar.sources=. \
+                                  -Dsonar.token=\$SONAR_TOKEN
                             """
                         }
                     }
@@ -81,7 +80,6 @@ pipeline {
                         passwordVariable: 'DOCKER_PASSWORD'
                     )
                 ]) {
-
                     sh '''
                         echo "$DOCKER_PASSWORD" | docker login \
                         -u "$DOCKER_USERNAME" \
@@ -118,6 +116,7 @@ pipeline {
     }
 
     post {
+
         success {
             echo "=================================="
             echo "CI/CD Pipeline Completed Successfully"
