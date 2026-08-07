@@ -21,41 +21,6 @@ pipeline {
             }
         }
 
-        stage('SonarQube Analysis') {
-            steps {
-                script {
-
-                    def scannerHome = tool 'SonarScanner'
-
-                    withSonarQubeEnv('SonarQube') {
-
-                        withCredentials([
-                            string(
-                                credentialsId: 'sonarqube-token',
-                                variable: 'SONAR_TOKEN'
-                            )
-                        ]) {
-
-                            sh """
-                                echo "===== SONAR DEBUG ====="
-                                echo "Scanner: ${scannerHome}"
-                                echo "Host: \$SONAR_HOST_URL"
-                                echo "Token Length: \${#SONAR_TOKEN}"
-                                echo "======================="
-
-                                ${scannerHome}/bin/sonar-scanner \
-                                  -Dsonar.projectKey=university-mis \
-                                  -Dsonar.projectName="University MIS" \
-                                  -Dsonar.sources=. \
-                                  -Dsonar.host.url=\$SONAR_HOST_URL \
-                                  -Dsonar.token=\$SONAR_TOKEN
-                            """
-                        }
-                    }
-                }
-            }
-        }
-
         stage('Build Backend Image') {
             steps {
                 echo "Building Backend Docker Image..."
@@ -87,6 +52,7 @@ pipeline {
                         passwordVariable: 'DOCKER_PASSWORD'
                     )
                 ]) {
+
                     sh '''
                         echo "$DOCKER_PASSWORD" | docker login \
                         -u "$DOCKER_USERNAME" \
@@ -98,6 +64,8 @@ pipeline {
 
         stage('Push Images') {
             steps {
+                echo "Pushing Docker Images..."
+
                 sh """
                     docker push ${BACKEND_IMAGE}
                     docker push ${FRONTEND_IMAGE}
@@ -107,7 +75,10 @@ pipeline {
 
         stage('Deploy to EC2') {
             steps {
+                echo "Deploying to EC2..."
+
                 sshagent(credentials: ['ec2-ssh']) {
+
                     sh """
                         ssh -o StrictHostKeyChecking=no ubuntu@15.252.73.205 '
                             cd ~/university-mis &&
