@@ -54,7 +54,6 @@ pipeline {
                         passwordVariable: 'DOCKER_PASSWORD'
                     )
                 ]) {
-
                     sh '''
                         echo "$DOCKER_PASSWORD" | docker login \
                         -u "$DOCKER_USERNAME" \
@@ -78,14 +77,15 @@ pipeline {
         stage('Deploy to EC2') {
             steps {
                 sshagent(credentials: ['ec2-ssh']) {
-                    sh '''
-                        ssh -o StrictHostKeyChecking=no ubuntu@15.252.73.205 << 'EOF'
-                        cd ~/university-mis
-                        docker compose pull
-                        docker compose down
-                        docker compose up -d
-                        EOF
-                    '''
+                    sh """
+                        ssh -o StrictHostKeyChecking=no ubuntu@15.252.73.205 '
+                            cd ~/university-mis &&
+                            docker compose pull &&
+                            docker compose down &&
+                            docker compose up -d &&
+                            docker ps
+                        '
+                    """
                 }
             }
         }
